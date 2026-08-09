@@ -1,5 +1,7 @@
 package controller;
 
-public class ControladorSorteio {
+import service.SistemaSorteio;
 
+public class ControladorSorteio {
+	SistemaSorteio sistema = new SistemaSorteio();
 }
