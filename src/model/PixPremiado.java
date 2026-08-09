@@ -5,41 +5,69 @@ import java.util.Iterator;
 import java.util.Random;
 
 import exception.BilheteInvalidoException;
+import exception.LimiteInvalidoException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
 import model.interfaces.Relatoravel;
 import model.interfaces.Sorteavel;
 
-public class Rifa implements Sorteavel, Relatoravel {
+public class PixPremiado implements Sorteavel, Relatoravel {
 	private String codigo;
 	private String premio;
 	private double valorBilhete;
-	private double meta;
+	private int metaBilhetes;
 	private double arrecadacaoAtual;
 	private HashMap<Integer, Bilhete> bilhetes;
 	private boolean sorteado;
-
-	public Rifa(String codigo, String premio, double valorBilhete, double meta) {
+	
+	public PixPremiado(String codigo, String premio, double valorBilhete, int metaBilhetes) {
+		validarValorBilhete(valorBilhete);
+	    validarMeta(metaBilhetes);
 		this.codigo = codigo;
 		this.premio = premio;
 		this.valorBilhete = valorBilhete;
-		this.meta = meta;
+		this.metaBilhetes = metaBilhetes;
 		this.arrecadacaoAtual = 0;
 		this.bilhetes = new HashMap<>();
 		this.sorteado = false;
+	}
+	
+	private void validarNumero(int numero) {
+        if (numero < 1 || numero > metaBilhetes) {
+            throw new BilheteInvalidoException("Número " + numero + " não existe no Pix Premaido (1 a " + metaBilhetes + ").");
+        }
+        if (bilhetes.containsKey(numero)) {
+            throw new BilheteInvalidoException("Bilhete " + numero + " já foi vendido.");
+        }
+    }
+	
+	private void validarMeta(double meta) {
+	    if (meta <= 0) {
+	        throw new LimiteInvalidoException("A meta deve ser maior que zero.");
+	    }
+	}
+
+	private void validarValorBilhete(double valorBilhete) {
+	    if (valorBilhete <= 0) {
+	        throw new LimiteInvalidoException("Valor do bilhete deve ser maior que zero: " + valorBilhete);
+	    }
 	}
 
 	@Override
 	public String gerarRelatorio() {
 		String relatorio = "\n============================== RELATÓRIO GERAL ==============================" + 
 							"\nPROGRESSO: ==================================================================" + 
-							"\nMeta de arrecadação: R$ %.2f%n" + meta + 
+							"\nMeta de arrecadação: R$ %.2f%n" + calcularMetaArrecadacao()  + 
 							"\nValor Arrecadado:    R$ %.2f%n" + arrecadacaoAtual +
 							"\nBilhetes vendidos: " + contarBilhetes() +
 							"\nProgresso: %.1f%%%n" + calcularProgressoEmPorcentagem() + 
-							"Restante para meta: %.1f%%%n" + calcularRestanteEmPorcentagem() + 
+							"\nRestante para meta: %.1f%%%n" + calcularRestanteEmPorcentagem() + 
 							"\n===========================================================================";
 		return relatorio;
+	}
+	
+	public double calcularMetaArrecadacao() {
+		return metaBilhetes * valorBilhete;
 	}
 
 	@Override
@@ -49,33 +77,36 @@ public class Rifa implements Sorteavel, Relatoravel {
 
 	@Override
 	public double calcularProgressoEmPorcentagem() {
-		double progressoPorcentagem = (100 * arrecadacaoAtual/meta);
+		double progressoPorcentagem = (100 * arrecadacaoAtual/calcularMetaArrecadacao());
 		return progressoPorcentagem;
 	}
 
+
 	@Override
 	public boolean venderBilhete(int numero, Vendedor vendedor, Comprador comprador, FormaDePagamento pagamento) {
-		if (bilhetes.containsKey(numero)) {
-			throw new BilheteInvalidoException("Bilhete " + numero + " não está disponível para venda.");
-		}
 		if (sorteado) {
 			throw new SorteioInvalidoException("A rifa já foi sorteada.");
 		}
-
+		validarNumero(numero);
+		
 		Bilhete bilhete = new Bilhete(numero, vendedor, comprador, pagamento);
-		bilhetes.put(numero, bilhete);
-		arrecadacaoAtual += valorBilhete;
-		vendedor.registrarHistorico();
-		comprador.registrarHistorico();
-		return true;
+        bilhetes.put(numero, bilhete);
+        arrecadacaoAtual += valorBilhete;
+        vendedor.registrarHistorico();
+        comprador.registrarHistorico();
+        return true;
 	}
 
 	@Override
 	public boolean prontoParaSorteio() {
-		if (arrecadacaoAtual >= meta) {
+		if (contarBilhetes() == metaBilhetes) {
 			return true;
 		}
 		return false;
+	}
+	
+	public int contarBilhetes() {
+		return bilhetes.size();
 	}
 
 	@Override
@@ -113,20 +144,14 @@ public class Rifa implements Sorteavel, Relatoravel {
 		return resultado;
 	}
 	
-	public int contarBilhetes() {
-		return bilhetes.size();
-	}
-
 	@Override
 	public String toString() {
 		return "Código: " + codigo + 
 				"\nPrêmio: " + premio + 
 				"\nValor por bilhete: " + valorBilhete + 
-				"\nMeta: " + meta +
+				"\nMeta: " + metaBilhetes + " bilhetes" +
 				"\nArrecadacao atual: " + arrecadacaoAtual + 
 				"\nQuantidade de bilhetes vendidos: " + contarBilhetes() + 
 				"\nSorteado? " + sorteado;
 	}
-	
-	
 }
