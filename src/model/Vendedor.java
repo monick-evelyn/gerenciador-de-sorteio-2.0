@@ -9,7 +9,7 @@ public class Vendedor extends Pessoa {
 	public Vendedor(String cpf, String nome, String telefone) {
 		super(cpf, nome, telefone);
 		this.quantidadeVendas = 0;
-		this.nivel = nivel.BRONZE;
+		this.nivel = NivelVendedor.BRONZE;
 	}
 
 	@Override
