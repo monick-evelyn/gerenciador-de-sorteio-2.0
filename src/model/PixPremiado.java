@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import exception.BilheteInvalidoException;
+import exception.DadosInvalidosException;
 import exception.LimiteInvalidoException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
@@ -21,8 +22,11 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	private boolean sorteado;
 	
 	public PixPremiado(String codigo, String premio, double valorBilhete, int metaBilhetes) {
+		validarTexto(codigo);
+		validarTexto(premio);
 		validarValorBilhete(valorBilhete);
 	    validarMeta(metaBilhetes);
+	    
 		this.codigo = codigo;
 		this.premio = premio;
 		this.valorBilhete = valorBilhete;
@@ -53,7 +57,11 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	    }
 	}
 	
-	
+	private void validarTexto(String texto) {
+		if (texto.isBlank()) {
+			throw new DadosInvalidosException(texto);
+		}
+	}
 
 	public String getCodigo() {
 		return codigo;

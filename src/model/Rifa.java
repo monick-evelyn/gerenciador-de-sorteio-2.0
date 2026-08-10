@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import exception.BilheteInvalidoException;
+import exception.DadosInvalidosException;
 import exception.LimiteInvalidoException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
@@ -21,6 +22,11 @@ public class Rifa implements Sorteavel, Relatoravel {
 	private boolean sorteado;
 
 	public Rifa(String codigo, String premio, double valorBilhete, double meta) {
+		validarTexto(codigo);
+		validarTexto(premio);
+		validarValorBilhete(valorBilhete);
+		validarMeta(meta);
+		
 		this.codigo = codigo;
 		this.premio = premio;
 		this.valorBilhete = valorBilhete;
@@ -28,6 +34,24 @@ public class Rifa implements Sorteavel, Relatoravel {
 		this.arrecadacaoAtual = 0;
 		this.bilhetes = new HashMap<>();
 		this.sorteado = false;
+	}
+	
+	private void validarMeta(double meta) {
+	    if (meta <= 0) {
+	        throw new LimiteInvalidoException("A meta deve ser maior que zero.");
+	    }
+	}
+
+	private void validarValorBilhete(double valorBilhete) {
+	    if (valorBilhete <= 0) {
+	        throw new LimiteInvalidoException("Valor do bilhete deve ser maior que zero: " + valorBilhete);
+	    }
+	}
+	
+	private void validarTexto(String texto) {
+		if (texto.isBlank()) {
+			throw new DadosInvalidosException(texto);
+		}
 	}
 
 	public String getCodigo() {

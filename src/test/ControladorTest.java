@@ -3,17 +3,26 @@ package test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Rule;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import controller.ControladorSorteio;
 import exception.BilheteInvalidoException;
 import exception.CompradorInvalidoException;
+import exception.CompradorNaoEncontradoException;
+import exception.DadosInvalidosException;
 import exception.SorteioInvalidoException;
+import exception.SorteioNaoEncontradoException;
 import exception.VendedorInvalidoException;
+import exception.VendedorNaoEncontradoException;
 import model.Comprador;
+import model.PixPremiado;
 import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
@@ -24,13 +33,13 @@ public class ControladorTest {
 	private ControladorSorteio controlador = new ControladorSorteio();
 	
 	// ============================================================
-	// TESTES COM SORTEAVEL
 	// ============================================================
 	
-	@Test
+	
+	@Test(expected = SorteioNaoEncontradoException.class)
 	public void deveIniciarSorteiosCadastrados() {
+		controlador.exibirTodosOsSorteios();
 		assertEquals(0, controlador.contarSorteios());
-		assertEquals("Nenhum sorteio cadastrado.", controlador.exibirTodosOsSorteios());
 	}
 	
 	@Test
@@ -41,17 +50,16 @@ public class ControladorTest {
 		assertEquals(2, controlador.contarSorteios());
 	}
 	
-	@Test
+	@Test(expected = SorteioInvalidoException.class)
 	public void naoDeveCadastrarDoisSorteiosComMesmoCodigo() {
-		assertTrue(controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0));
-		assertFalse(controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 10));
-		
+		controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0);
 		assertEquals(1, controlador.contarSorteios());
+		controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 100);
 	}
 	
 	@Test
 	public void naoDeveCadastrarRifaComMetaInvalida() {
-		assertFalse(controlador.cadastrarRifa("R001", "Moto 0km", 10.0, -100.0));
+		controlador.cadastrarRifa("R001", "Moto 0km", 10.0, -100.0);
 		
 		assertEquals(0, controlador.contarSorteios());
 	}
@@ -64,7 +72,6 @@ public class ControladorTest {
 	}
 	
 	// ============================================================
-	// TESTES DE CADASTRO DE ENTENDADE
 	// ============================================================
 	@Test
 	public void deveCadastrarPessoa() {
@@ -75,22 +82,23 @@ public class ControladorTest {
 		assertEquals(1, controlador.contarCompradores());
 	}
 	
+	@Test(expected = VendedorInvalidoException.class)
 	public void naoDeveCadastrarDoisVendedoresComMesmoCpf() {
-		assertTrue(controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000"));
-		assertFalse(controlador.cadastrarVendedor("11122233344", "Anderson Soares", "83988887777"));
-		
-		assertEquals(1, controlador.contarVendedores());
+	    controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
+	    assertEquals(1, controlador.contarVendedores());
+	    controlador.cadastrarVendedor("11122233344", "Anderson Soares", "83988887777");
 	}
 	
+	@Test(expected = CompradorInvalidoException.class)
 	public void naoDeveCadastrarDoisCompradoresComMesmoCpf() {
-		assertTrue(controlador.cadastrarComprador("55566677788", "Ana Lima", "83999990000"));
-		assertFalse(controlador.cadastrarComprador("55566677788", "Maria Margarida", "8399997777"));
-		
-		assertEquals(1, controlador.contarCompradores());
+	    controlador.cadastrarComprador("55566677788", "Ana Lima", "83999990000");
+	    assertEquals(1, controlador.contarCompradores());
+	    controlador.cadastrarComprador("55566677788", "Maria Margarida", "8399997777");
 	}
 	
+	@Test(expected = DadosInvalidosException.class)
 	public void naoDeveCadastrarPessoaComDadosVazios() {
-		assertFalse(controlador.cadastrarVendedor("", "Maria Margarida", "8399997777"));
+		controlador.cadastrarVendedor("", "Maria Margarida", "8399997777");
 		assertFalse(controlador.cadastrarVendedor("55566677788", "", "8399997777"));
 		assertFalse(controlador.cadastrarVendedor("55566677788", "Maria Margarida", ""));
 		assertFalse(controlador.cadastrarVendedor("", "", ""));
@@ -126,7 +134,6 @@ public class ControladorTest {
 	}
 	
 	// ============================================================
-	// TESTES DE BUSCA
 	// ============================================================
 	
 	@Test
@@ -142,6 +149,21 @@ public class ControladorTest {
 	    assertEquals("Moto 0km", rifa.getPremio());
 	    assertEquals(10.0, rifa.getValorBilhete(), 0.001);
 	    assertEquals(100.0, rifa.getMeta(), 0.001);
+	}
+	
+	@Test
+	public void deveBuscarSorteioPixPeloCodigo() {
+	    controlador.cadastrarPixPremiado("P001", "Moto 0km", 10.0, 100);
+
+	    Sorteavel sorteio = controlador.buscarSorteioPorCodigo("P001");
+	    assertNotNull(sorteio);
+	    assertTrue(sorteio instanceof PixPremiado);
+
+	    PixPremiado pixPremiado = (PixPremiado) sorteio;
+	    assertEquals("P001", pixPremiado.getCodigo());
+	    assertEquals("Moto 0km", pixPremiado.getPremio());
+	    assertEquals(10.0, pixPremiado.getValorBilhete(), 0.001);
+	    assertEquals(100, pixPremiado.getMetaBilhetes());
 	}
 	
 	@Test
@@ -179,18 +201,17 @@ public class ControladorTest {
 		controlador.buscarSorteioPorCodigo("R999");
 	}
 
-	@Test(expected = VendedorInvalidoException.class)
+	@Test(expected = VendedorNaoEncontradoException.class)
 	public void deveLancarExcecaoAoBuscarVendedorInexistente() {
 		controlador.buscarVendedorPorCPF("00000000000");
 	}
 
-	@Test(expected = CompradorInvalidoException.class)
+	@Test(expected = CompradorNaoEncontradoException.class)
 	public void deveLancarExcecaoAoBuscarCompradorInexistente() {
 		controlador.buscarCompradorPorCPF("00000000000");
 	}
 	
 	// ============================================================
-	// TESTES DE VENDA DE BILHETE E POLIMORFISMO DE INTERFACE
 	// ============================================================
 	
 	@Test
@@ -215,7 +236,6 @@ public class ControladorTest {
 	}
 	
 	// ============================================================
-	// TESTES DE REGRAS ESPECÍFICAS DE CADA TIPO DE SORTEIO
 	// ============================================================
 	
 	@Test
@@ -252,7 +272,6 @@ public class ControladorTest {
 	}
 
 	// ============================================================
-	// TESTES DE NÍVEL DE VENDEDOR
 	// ============================================================
 
 	@Test

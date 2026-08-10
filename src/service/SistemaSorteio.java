@@ -18,6 +18,7 @@ import exception.BilheteNaoEncontradoException;
 import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.LimiteInvalidoException;
+
 import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
 import exception.VendedorInvalidoException;
@@ -36,75 +37,60 @@ public class SistemaSorteio {
 	}
 
 	public boolean cadastrarRifa(String codigo, String premio, double valorBilhete, double meta) {
-		if (codigo == null || codigo.isBlank()) {
-			throw new SorteioInvalidoException("Codigo do sorteio invalido.");
-		}
-		if (premio == null || premio.isBlank()) {
-			throw new SorteioInvalidoException("Premio nao pode ser vazio.");
-		}
-		if (itens.containsKey(codigo)) {
-			throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
-		}
-		if (meta <= 0.0) {
-			throw new SorteioInvalidoException("Meta insuficiente.");
+		if (buscarSorteioPorCodigo(codigo) != null) {
+			throw new SorteioInvalidoException("Já existe um sorteio com esse codigo.");
 		}
 
-		Rifa rifa = new Rifa(codigo, premio, valorBilhete, meta);
-		itens.put(codigo, rifa);
-		return true;
+		try {
+			Rifa rifa = new Rifa(codigo, premio, valorBilhete, meta);
+			itens.put(codigo, rifa);
+			return true;
+		} catch (Exception e) {
+			throw new SorteioInvalidoException("Não foi possivel cadastrar a Rifa.");
+		}
 	}
 
 	public boolean cadastrarPixPremiado(String codigo, String premio, double valorBilhete, int limiteBilhetes) {
-		if (codigo == null || codigo.isBlank()) {
-			throw new SorteioInvalidoException("Codigo do sorteio invalido.");
-		}
-		if (premio == null || premio.isBlank()) {
-			throw new SorteioInvalidoException("Premio nao pode ser vazio.");
-		}
-		if (itens.containsKey(codigo)) {
-			throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
+		if (buscarSorteioPorCodigo(codigo) != null) {
+			throw new SorteioInvalidoException("Já existe um sorteio com esse codigo.");
 		}
 
-		PixPremiado pix = new PixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
-		itens.put(codigo, pix);
-		return true;
+		try {
+			PixPremiado pix = new PixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
+			itens.put(codigo, pix);
+			return true;
+		} catch (Exception e) {
+			throw new SorteioInvalidoException("Não foi possivel cadastrar o Pix Premiado.");
+		}
 	}
 
 	public boolean cadastrarVendedor(String cpf, String nome, String telefone) {
 
-		if (cpf == null || cpf.isBlank()) {
-			throw new VendedorInvalidoException("CPF do vendedor nao pode ser vazio.");
+		if (buscarVendedorPorCPF(cpf) != null) {
+			throw new VendedorInvalidoException("Ja existe um vendedor com esse cpf cadastrado.");
 		}
 
-		if (nome == null || nome.isBlank()) {
-			throw new VendedorInvalidoException("Nome do vendedor nao pode ser vazio.");
+		try {
+			Vendedor novoVendedor = new Vendedor(cpf, nome, telefone);
+			vendedores.add(novoVendedor);
+			return true;
+		} catch (IllegalArgumentException e) {
+			throw new CompradorInvalidoException("Não foi possível cadastrar o vendedor.");
 		}
-
-		Vendedor novoVendedor = new Vendedor(cpf, nome, telefone);
-
-		if (!vendedores.add(novoVendedor)) {
-			throw new VendedorInvalidoException("Ja existe um vendedor cadastrado.");
-		}
-
-		return true;
 	}
 
 	public boolean cadastrarComprador(String cpf, String nome, String telefone) {
-		if (cpf == null || cpf.isBlank()) {
-			throw new CompradorInvalidoException("CPF do comprador nao pode ser vazio.");
-		}
-
-		if (nome == null || nome.isBlank()) {
-			throw new CompradorInvalidoException("Nome do comprador nao pode ser vazio.");
-		}
-
-		Comprador novoComprador = new Comprador(cpf, nome, telefone);
-
-		if (!compradores.add(novoComprador)) {
+		if (buscarCompradorPorCPF(cpf) != null) {
 			throw new CompradorInvalidoException("Ja existe um comprador cadastrado.");
 		}
 
-		return true;
+		try {
+			Comprador novoComprador = new Comprador(cpf, nome, telefone);
+			compradores.add(novoComprador);
+			return true;
+		} catch (IllegalArgumentException e) {
+			throw new CompradorInvalidoException("Não foi possível cadastrar o comprador.");
+		}
 	}
 
 	public boolean venderBilhete(String codigoSorteio, int numero, String codigoVendedor, String codigoComprador,
@@ -140,16 +126,24 @@ public class SistemaSorteio {
 
 	public Vendedor buscarVendedorPorCPF(String cpf) {
 
+		if (contarVendedores() == 0) {
+			return null;
+		}
+
 		for (Vendedor vendedor : vendedores) {
 
 			if (vendedor.getCpf().equalsIgnoreCase(cpf)) {
 				return vendedor;
 			}
 		}
-		throw new VendedorNaoEncontradoException("Vendedor com CPF " + cpf + " nao encontrado.");
+		return null;
 	}
 
 	public Comprador buscarCompradorPorCPF(String cpf) {
+
+		if (contarCompradores() == 0) {
+			return null;
+		}
 
 		for (Comprador comprador : compradores) {
 
@@ -161,8 +155,7 @@ public class SistemaSorteio {
 	}
 
 	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
-
-		Sorteavel item = itens.get(codigoSorteio);
+		Sorteavel item = buscarSorteioPorCodigo(codigoSorteio);
 
 		if (item == null) {
 			throw new BilheteNaoEncontradoException("Item de codigo " + codigoSorteio + " nao encontrado.");
@@ -181,7 +174,9 @@ public class SistemaSorteio {
 		Sorteavel item = itens.get(codigo);
 
 		if (item == null) {
-			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
+			return null;
+			// throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + "
+			// nao encontrado.");
 		}
 		return item;
 	}
@@ -201,8 +196,14 @@ public class SistemaSorteio {
 	public String exibirTodosOsSorteios() {
 		if (contarSorteios() == 0) {
 			return "Nenhum sorteio encontrado.";
+			// throw new SorteioNaoEncontradoException("Nenhum sorteio encontrado.");
 		}
-		return itens.toString();
+
+		StringBuilder lista = new StringBuilder();
+		for (Sorteavel sorteio : itens.values()) {
+			lista.append(sorteio.toString()).append("\n\n");
+		}
+		return lista.toString().trim();
 	}
 
 	public String realizarSorteio(String codigoSorteio) {
