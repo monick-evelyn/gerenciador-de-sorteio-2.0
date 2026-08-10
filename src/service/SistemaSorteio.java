@@ -344,19 +344,19 @@ public class SistemaSorteio {
 		return formatarRankingDeVendedores(this.vendedores, "RANKING GERAL DE VENDEDORES");
 
 	}
-	
+
 	public String gerarRankingVendedoresPorSorteio(String codigoSorteio) {
-		Sorteavel item=buscarSorteioPorCodigo(codigoSorteio);
-		HashMap<Integer,Bilhete>bilhetes=obterBilhetesDoSorteio(item);
+		Sorteavel item = buscarSorteioPorCodigo(codigoSorteio);
+		HashMap<Integer, Bilhete> bilhetes = obterBilhetesDoSorteio(item);
 		if (bilhetes == null || bilhetes.isEmpty()) {
 			throw new BilheteNaoEncontradoException("Nenhuma venda encontrada");
 		}
-		
-		List<Vendedor> vendedoresDoSorteio=new ArrayList<>();
-		for(Bilhete bilhete : bilhetes.values()) {
+
+		List<Vendedor> vendedoresDoSorteio = new ArrayList<>();
+		for (Bilhete bilhete : bilhetes.values()) {
 			vendedoresDoSorteio.add(bilhete.getVendedor());
 		}
-		return formatarRankingDeVendedores(vendedoresDoSorteio, "RANKING DO SORTEIO ("+codigoSorteio+")");
+		return formatarRankingDeVendedores(vendedoresDoSorteio, "RANKING DO SORTEIO (" + codigoSorteio + ")");
 	}
 
 	private String formatarRankingDeVendedores(List<Vendedor> vendedores, String titulo) {
@@ -384,5 +384,89 @@ public class SistemaSorteio {
 
 		return resultado;
 
+	}
+
+	public String listarVendasPorVendedor(String cpf) {
+		Vendedor vendedorAux = buscarVendedorPorCPF(cpf);
+
+		if (itens.isEmpty()) {
+			throw new BilheteNaoEncontradoException("Nenhuma venda cadastrada no sistema");
+		}
+		String resultado = "";
+		resultado += "\n==================== VENDAS POR VENDEDOR ====================\n";
+		resultado += "Vendedor: " + vendedorAux.getNome() + " (CPF: " + vendedorAux.getCpf() + ")\n";
+		resultado += "===============================================================";
+		int bilhetesEncontrados = 0;
+		for (Sorteavel item : itens.values()) {
+			HashMap<Integer, Bilhete> bilhetes = obterBilhetesDoSorteio(item);
+			if (bilhetes != null) {
+				for (Bilhete bilhete : bilhetes.values()) {
+					if (bilhete.getVendedor() != null && bilhete.getVendedor().getCpf().equalsIgnoreCase(cpf)) {
+						resultado += bilhete.toString() + "\n";
+						bilhetesEncontrados++;
+					}
+				}
+			}
+		}
+		if (bilhetesEncontrados == 0) {
+			throw new BilheteNaoEncontradoException(
+					"O vendedor " + vendedorAux.getNome() + " não realizou nenhuma venda");
+		}
+
+		resultado += "Total de bilhetes vendidos: " + bilhetesEncontrados + "\n";
+		resultado += "===============================================================";
+		return resultado;
+
+	}
+
+	public String exibirTodosOsCompradores() {
+		if (compradores == null || compradores.isEmpty()) {
+			throw new CompradorNaoEncontradoException("Nenhum comprador cadastrado.");
+		}
+		String resultado = "";
+		resultado = "==================== COMPRADORES CADASTRADOS ====================\n";
+		for (int i = 0; i < compradores.size(); i++) {
+			Comprador comprador = compradores.get(i);
+			resultado += ((i + 1) + "º - Nome: " + comprador.getNome() + " | CPF: " + comprador.getCpf()
+					+ " | Telefone: " + comprador.getTelefone() + "\n");
+		}
+		resultado += "===============================================================";
+		return resultado;
+	}
+
+	public String exibirHistoricoPorComprador(String cpf) {
+		Comprador compradorAux = buscarCompradorPorCPF(cpf);
+		if (itens.isEmpty()) {
+			throw new BilheteNaoEncontradoException("Nenhum bilhete encontrado no sistema.");
+		}
+
+		String resultado = "";
+		resultado += "==================== HISTÓRICO DO COMPRADOR ====================\n";
+		resultado += "Comprador: " + compradorAux.getNome() + " (CPF: " + compradorAux.getCpf() + ")\n";
+		resultado += "===============================================================";
+
+		int bilhetesComprados = 0;
+
+		for (Sorteavel item : itens.values()) {
+			HashMap<Integer, Bilhete> bilhetes = obterBilhetesDoSorteio(item);
+
+			if (bilhetes != null) {
+				for (Bilhete bilhete : bilhetes.values()) {
+					if (bilhete.getComprador() != null && bilhete.getComprador().getCpf().equalsIgnoreCase(cpf)) {
+						String nomeVendedor = bilhete.getVendedor().getNome();
+
+						resultado += " | Bilhete Nº: " + bilhete.getNumero() + " | Vendedor: " + nomeVendedor
+								+ " | Pagamento: " + bilhete.getFormaPagamento() + "\n";
+						bilhetesComprados++;
+					}
+				}
+			}
+		}
+		if (bilhetesComprados == 0) {
+			throw new BilheteNaoEncontradoException(compradorAux.getNome() + " ainda não comprou nenhum bilhete.");
+		}
+		resultado += "Total de bilhetes adquiridos: " + bilhetesComprados + "\n";
+		resultado += "===========================================================";
+		return resultado;
 	}
 }
