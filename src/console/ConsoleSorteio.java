@@ -4,11 +4,19 @@ import java.util.Scanner;
 
 import controller.ControladorSorteio;
 import exception.BilheteInvalidoException;
+import exception.BilheteNaoEncontradoException;
+import exception.CompradorNaoEncontradoException;
 import exception.LimiteInvalidoException;
+import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
 import exception.VendedorInvalidoException;
+import exception.VendedorNaoEncontradoException;
+import model.Bilhete;
+import model.Comprador;
 import model.PixPremiado;
 import model.Rifa;
+import model.Vendedor;
+import model.enums.FormaDePagamento;
 import model.enums.TipoSorteio;
 
 public class ConsoleSorteio {
@@ -79,46 +87,50 @@ public class ConsoleSorteio {
 			break;
 
 		case 10:
-			atualizarMetaDoSorteio();
+			atualizarMetaRifa();
 			break;
 
 		case 11:
-			atualizarNivelDoVendedor();
+			atualizarMetaPix();
 			break;
 
 		case 12:
-			transformarUmaRifaEmPix();
+			atualizarNivelDoVendedor();
 			break;
 
 		case 13:
-			listarSorteiosCadastrados();
+			transformarUmaRifaEmPix();
 			break;
 
 		case 14:
-			listarRelatorioGeralDoSorteio();
+			listarSorteiosCadastrados();
 			break;
 
 		case 15:
-			listarRankingDeVendedores();
+			listarRelatorioGeralDoSorteio();
 			break;
 
 		case 16:
-			listarRankingDeVendedoresPorSorteio();
+			listarRankingDeVendedores();
 			break;
 
 		case 17:
-			listarVendasPorVendedor();
+			listarRankingDeVendedoresPorSorteio();
 			break;
 
 		case 18:
-			exibirFunilDeCompradores();
+			listarVendasPorVendedor();
 			break;
 
 		case 19:
-			exibirHistoricoPorComprador();
+			exibirFunilDeCompradores();
 			break;
 
 		case 20:
+			exibirHistoricoPorComprador();
+			break;
+
+		case 21:
 			sortearNumero();
 			break;
 
@@ -133,7 +145,13 @@ public class ConsoleSorteio {
 	}
 
 	private void sortearNumero() {
-		// TODO Auto-generated method stub
+		try {
+			String codigo = lerTexto("Codigo do sorteio: ");
+			String resultado = controlador.sortearNumero(codigo);
+			System.out.println(resultado);
+		} catch (SorteioNaoEncontradoException | SorteioInvalidoException e) {
+			System.out.println("Erro ao sortear: " + e.getMessage());
+		}
 
 	}
 
@@ -163,61 +181,163 @@ public class ConsoleSorteio {
 	}
 
 	private void listarRelatorioGeralDoSorteio() {
-		// TODO Auto-generated method stub
+		String codigoSorteio = lerTexto("Código sorteio: ");
+		try {
+			String relatorio= controlador.exibirRelatorioGeralDoSorteio(codigoSorteio);
+			System.out.println(relatorio);
+		}catch(SorteioNaoEncontradoException | SorteioInvalidoException e){
+			System.out.println("Erro :"+e.getMessage());
+			
+		}
 
 	}
 
 	private void listarSorteiosCadastrados() {
-		// TODO Auto-generated method stub
+		System.out.println(controlador.exibirTodosOsSorteios());
 
 	}
 
 	private void transformarUmaRifaEmPix() {
-		// TODO Auto-generated method stub
+		try {
+			String codigoRifa = lerTexto("Código da rifa: ");
+			int metaBilhetes = lerInteiro("Meta bilhetes: ");
+			controlador.transformarRifaemPix(codigoRifa, metaBilhetes);
+			System.out.println("A rifa foi transformada em pix premiado!");
 
+		} catch (SorteioNaoEncontradoException | SorteioInvalidoException | LimiteInvalidoException e) {
+			System.out.println("Erro ao transformar rifa em pix: " + e.getMessage());
+		}
 	}
 
 	private void atualizarNivelDoVendedor() {
-		// TODO Auto-generated method stub
+		try {
+			String cpf = lerTexto("CPF: ");
+			boolean alteracao = controlador.atualizarNivelDoVendedor(cpf);
+
+			if (alteracao) {
+				Vendedor vendedor = controlador.buscarVendedorPorCPF(cpf);
+				System.out.println("Nível atualizado com sucesso! Novo nível: " + vendedor.getNivel());
+			} else {
+				System.out.println("O vendedor já está no nível correspondente à sua quantidade de vendas.");
+			}
+		} catch (VendedorNaoEncontradoException e) {
+			System.out.println("Erro ao atualizar nível: " + e.getMessage());
+		}
 
 	}
 
-	private void atualizarMetaDoSorteio() {
-		// TODO Auto-generated method stub
+	private void atualizarMetaRifa() {
+		try {
+			String codigoSorteio = lerTexto("Código sorteio: ");
+			double novaMeta = lerDouble("Nova meta: ");
+			controlador.atualizarMetaRifa(codigoSorteio, novaMeta);
+			System.out.println("Meta atualizada com sucesso!");
+		} catch (BilheteInvalidoException | LimiteInvalidoException e) {
+			System.out.println("Erro ao atualizar meta: " + e.getMessage());
+		}
+
+	}
+
+	private void atualizarMetaPix() {
+		try {
+			String codigoSorteio = lerTexto("Código sorteio: ");
+			int novaMeta = lerInteiro("Nova meta: ");
+			controlador.atualizarMetaPix(codigoSorteio, novaMeta);
+			System.out.println("Meta atualizada com sucesso!");
+		} catch (BilheteInvalidoException | LimiteInvalidoException e) {
+			System.out.println("Erro ao atualizar meta: " + e.getMessage());
+		}
 
 	}
 
 	private void removerVenda() {
-		// TODO Auto-generated method stub
+		try {
+			String codigoSorteio = lerTexto("Código sorteio: ");
+			int numeroBilhete = lerInteiro("Número do bilhete: ");
+
+			controlador.removerVenda(codigoSorteio, numeroBilhete);
+			System.out.println("Venda removida com sucesso!");
+		} catch (BilheteNaoEncontradoException e) {
+			System.out.println("Erro ao remover bilhete: " + e.getMessage());
+		}
 
 	}
 
 	private void venderBilhete() {
-		// TODO Auto-generated method stub
+
+		try {
+			FormaDePagamento formaPagamento = null;
+
+			menuExibirFormaDePagamento();
+			int opcao = lerInteiro("Opcao: ");
+
+			switch (opcao) {
+			case 1:
+				formaPagamento = FormaDePagamento.PIX;
+				break;
+			case 2:
+				formaPagamento = FormaDePagamento.DINHEIRO;
+				break;
+			case 3:
+				formaPagamento = FormaDePagamento.CARTAO;
+				break;
+			case 0:
+				return;
+			default:
+				System.out.println("Opcao invalida.");
+			}
+
+			String codigoSorteio = lerTexto("Código sorteio: ");
+			int numeroBilhete = lerInteiro("Número do bilhete: ");
+			String codigoVendedor = lerTexto("Código vendedor: ");
+			String codigoComprador = lerTexto("Código comprador: ");
+			controlador.venderBilhete(codigoSorteio, numeroBilhete, codigoVendedor, codigoComprador, formaPagamento);
+
+		} catch (BilheteInvalidoException e) {
+			System.out.println("Erro ao vender bilhete: " + e.getMessage());
+		}
 
 	}
 
 	private void buscarVendedorPorCPF() {
-		// TODO Auto-generated method stub
+		try {
+			String cpf = lerTexto("CPF: ");
+			Vendedor vendedor = controlador.buscarVendedorPorCPF(cpf);
+			System.out.println(vendedor);
+		} catch (CompradorNaoEncontradoException e) {
+			System.out.println("Erro ao buscar vendedor: " + e.getMessage());
+		}
 
 	}
 
 	private void buscarCompradorPorCPF() {
-		// TODO Auto-generated method stub
+		try {
+			String cpf = lerTexto("CPF: ");
+			Comprador comprador = controlador.buscarCompradorPorCPF(cpf);
+			System.out.println(comprador);
+		} catch (CompradorNaoEncontradoException e) {
+			System.out.println("Erro ao buscar comprador: " + e.getMessage());
+		}
 
 	}
 
 	private void buscarBilhetePorCodigo() {
-		// TODO Auto-generated method stub
-
+		try {
+			String codigoSorteio = lerTexto("Codigo do sorteio: ");
+			int numeroBilhete = lerInteiro("Numero do bilhete: ");
+			Bilhete bilhete = controlador.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
+			System.out.println(bilhete);
+		} catch (BilheteNaoEncontradoException e) {
+			System.out.println("Erro ao buscar bilhete: " + e.getMessage());
+		}
 	}
 
 	private void buscarSorteioPorCodigo() {
 		try {
-			String codigoSorteio=lerTexto("Codigo do sorteio: ");
+			String codigoSorteio = lerTexto("Codigo do sorteio: ");
 			controlador.buscarSorteioPorCodigo(codigoSorteio);
-		} catch(SorteioNaoEncontradoException e) {
-			System.out.println("Erro ao buscar sorteio: "+ e.getMessage());
+		} catch (SorteioNaoEncontradoException e) {
+			System.out.println("Erro ao buscar sorteio: " + e.getMessage());
 		}
 	}
 
@@ -253,27 +373,27 @@ public class ConsoleSorteio {
 		try {
 			switch (opcao) {
 			case 1:
-				TipoSorteio tipo;
-				tipo = TipoSorteio.RIFA;
 
-				int codigo = lerInteiro("Codigo do sorteio: ");
+				String codigo = lerTexto("Codigo do sorteio: ");
 				String premio = lerTexto("Premio: ");
 				double valorBilhete = lerDouble("Valor do bilhete: ");
-				double valorParaArrecadar = lerDouble("Valor para arrecadar: ");
+				double meta = lerDouble("Valor para arrecadar: ");
 
-				controlador.cadastrarRifa(codigo, tipo, premio, valorBilhete, valorParaArrecadar);
+				controlador.cadastrarRifa(codigo, premio, valorBilhete, meta);
 				break;
 
 			case 2:
-				tipo = TipoSorteio.PIXPREMIADO;
 
-				codigo = lerInteiro("Codigo do sorteio: ");
+				codigo = lerTexto("Codigo do sorteio: ");
 				premio = lerTexto("Premio: ");
 				valorBilhete = lerDouble("Valor do bilhete: ");
-				double metaBilhetes = lerInteiro("Meta de bilhetes: ");
+				int limiteBilhetes = lerInteiro("Limite de bilhetes: ");
 
-				controlador.cadastrarPixPremiado(codigo, tipo, premio, valorBilhete, metaBilhetes);
+				controlador.cadastrarPixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
 				break;
+
+			case 0:
+				return;
 
 			default:
 				System.out.println("Opcao invalida.");
@@ -294,6 +414,17 @@ public class ConsoleSorteio {
 		System.out.println("╚══════════════════════════════════════════════════╝");
 	}
 
+	private void menuExibirFormaDePagamento() {
+		System.out.println("\n╔══════════════════════════════════════════════════╗");
+		System.out.printf("║ %-50s║%n", "QUAL A FORMA DE PAGAMENTO?");
+		System.out.println("╠══════════════════════════════════════════════════╣");
+		System.out.printf("║  %-49s║%n", "1 - Pix");
+		System.out.printf("║  %-49s║%n", "2 - Dinheiro");
+		System.out.printf("║  %-49s║%n", "3 - Cartão");
+		System.out.printf("║  %-49s║%n", "0 - Cancelar");
+		System.out.println("╚══════════════════════════════════════════════════╝");
+	}
+
 	private void exibirMenu() {
 		System.out.println("\n╔══════════════════════════════════════════════════╗");
 		System.out.println("║               MENU DE OPÇÕES                     ║");
@@ -307,17 +438,18 @@ public class ConsoleSorteio {
 		System.out.printf("║ %-49s║%n", "7  - Buscar comprador por CPF");
 		System.out.printf("║ %-49s║%n", "8  - Vender bilhete");
 		System.out.printf("║ %-49s║%n", "9  - Remover venda");
-		System.out.printf("║ %-49s║%n", "10 - Atualizar meta do sorteio");
-		System.out.printf("║ %-49s║%n", "11 - Atualizar nível do vendedor");
-		System.out.printf("║ %-49s║%n", "12 - Transformar uma rifa em pix");
-		System.out.printf("║ %-49s║%n", "13 - Listar sorteios cadastrados");
-		System.out.printf("║ %-49s║%n", "14 - Listar relatório geral do sorteio");
-		System.out.printf("║ %-49s║%n", "15 - Listar ranking de vendedores");
-		System.out.printf("║ %-49s║%n", "16 - Listar ranking de vendedores por sorteio");
-		System.out.printf("║ %-49s║%n", "17 - Listar vendas por vendedor");
-		System.out.printf("║ %-49s║%n", "18 - Exibir funil de compradores");
-		System.out.printf("║ %-49s║%n", "19 - Exibir histórico por comprador");
-		System.out.printf("║ %-49s║%n", "20 - Sortear número");
+		System.out.printf("║ %-49s║%n", "10 - Atualizar meta de uma rifa");
+		System.out.printf("║ %-49s║%n", "11 - Atualizar meta de um pix");
+		System.out.printf("║ %-49s║%n", "12 - Atualizar nível do vendedor");
+		System.out.printf("║ %-49s║%n", "13 - Transformar uma rifa em pix");
+		System.out.printf("║ %-49s║%n", "14 - Listar sorteios cadastrados");
+		System.out.printf("║ %-49s║%n", "15 - Listar relatório geral do sorteio");
+		System.out.printf("║ %-49s║%n", "16 - Listar ranking de vendedores");
+		System.out.printf("║ %-49s║%n", "17 - Listar ranking de vendedores por sorteio");
+		System.out.printf("║ %-49s║%n", "18 - Listar vendas por vendedor");
+		System.out.printf("║ %-49s║%n", "19 - Exibir funil de compradores");
+		System.out.printf("║ %-49s║%n", "20 - Exibir histórico por comprador");
+		System.out.printf("║ %-49s║%n", "21 - Sortear número");
 		System.out.printf("║ %-49s║%n", "0  - Sair");
 		System.out.println("╚══════════════════════════════════════════════════╝");
 	}

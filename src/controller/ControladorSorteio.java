@@ -1,3 +1,4 @@
+
 package controller;
 
 import model.Bilhete;
@@ -18,7 +19,7 @@ public class ControladorSorteio {
 	public boolean cadastrarRifa(String codigoSorteio, String premio, double valorBilhete, double valorParaArrecadar) {
 		return sistema.cadastrarRifa(codigoSorteio, premio, valorBilhete, valorParaArrecadar);
 	}
-	
+
 	public boolean cadastrarPixPremiado(String codigo, String premio, double valorBilhete, int limiteBilhetes) {
 		return sistema.cadastrarPixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
 	}
@@ -44,7 +45,7 @@ public class ControladorSorteio {
 		return sistema.buscarCompradorPorCPF(cpf);
 	}
 
-	public Bilhete buscarBilhetePorCodigo(int codigoSorteio, int numeroBilhete) {
+	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
 		return sistema.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
 	}
 
@@ -70,7 +71,35 @@ public class ControladorSorteio {
 
 	public String realizarSorteio(String codigoSorteio) {
 		return sistema.realizarSorteio(codigoSorteio);
-		
+
 	}
 
+	public boolean removerVenda(String codigoSorteio, int numeroBilhete) {
+		return sistema.removerVenda(codigoSorteio, numeroBilhete);
+	}
+
+	public boolean atualizarMetaRifa(String codigo, double novaMeta) {
+		return sistema.atualizarMetaRifa(codigo, novaMeta);
+	}
+
+	public boolean atualizarMetaPix(String codigo, int novaMeta) {
+		return sistema.atualizarMetaPix(codigo, novaMeta);
+	}
+
+	public String sortearNumero(String codigoRifa) {
+		return sistema.sortearNumero(codigoRifa);
+	}
+
+	public boolean atualizarNivelDoVendedor(String cpf) {
+		return sistema.atualizarNivelDoVendedor(cpf);
+	}
+	
+	public boolean transformarRifaemPix(String codigo, int metaBilhetes) {
+		return sistema.transformarRifaemPix(codigo, metaBilhetes);
+	}
+
+	public String exibirRelatorioGeralDoSorteio(String codigo) {
+		return sistema.exibirRelatorioGeralDoSorteio(codigo);
+	}
+	
 }

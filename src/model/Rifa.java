@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import exception.BilheteInvalidoException;
+import exception.LimiteInvalidoException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
 import model.interfaces.Relatoravel;
@@ -28,15 +29,15 @@ public class Rifa implements Sorteavel, Relatoravel {
 		this.bilhetes = new HashMap<>();
 		this.sorteado = false;
 	}
-	
+
 	public String getCodigo() {
 		return codigo;
 	}
 
-
 	public String getPremio() {
 		return premio;
 	}
+
 	public void setPremio(String premio) {
 		this.premio = premio;
 	}
@@ -44,6 +45,7 @@ public class Rifa implements Sorteavel, Relatoravel {
 	public double getValorBilhete() {
 		return valorBilhete;
 	}
+
 	public void setValorBilhete(double valorBilhete) {
 		this.valorBilhete = valorBilhete;
 	}
@@ -51,6 +53,7 @@ public class Rifa implements Sorteavel, Relatoravel {
 	public double getMeta() {
 		return meta;
 	}
+
 	public void setMeta(double meta) {
 		this.meta = meta;
 	}
@@ -58,6 +61,7 @@ public class Rifa implements Sorteavel, Relatoravel {
 	public double getArrecadacaoAtual() {
 		return arrecadacaoAtual;
 	}
+
 	public void setArrecadacaoAtual(double arrecadacaoAtual) {
 		this.arrecadacaoAtual = arrecadacaoAtual;
 	}
@@ -69,20 +73,19 @@ public class Rifa implements Sorteavel, Relatoravel {
 	public boolean isSorteado() {
 		return sorteado;
 	}
+
 	public void setSorteado(boolean sorteado) {
 		this.sorteado = sorteado;
 	}
 
 	@Override
 	public String gerarRelatorio() {
-		String relatorio = "\n============================== RELATÓRIO GERAL ==============================" + 
-							"\nPROGRESSO: ==================================================================" + 
-							"\nMeta de arrecadação: R$ %.2f%n" + meta + 
-							"\nValor Arrecadado:    R$ %.2f%n" + arrecadacaoAtual +
-							"\nBilhetes vendidos: " + contarBilhetes() +
-							"\nProgresso: %.1f%%%n" + calcularProgressoEmPorcentagem() + 
-							"Restante para meta: %.1f%%%n" + calcularRestanteEmPorcentagem() + 
-							"\n===========================================================================";
+		String relatorio = "\n============================== RELATÓRIO GERAL =============================="
+				+ "\nPROGRESSO: =================================================================="
+				+ "\nMeta de arrecadação: R$ %.2f%n" + meta + "\nValor Arrecadado:    R$ %.2f%n" + arrecadacaoAtual
+				+ "\nBilhetes vendidos: " + contarBilhetes() + "\nProgresso: %.1f%%%n"
+				+ calcularProgressoEmPorcentagem() + "Restante para meta: %.1f%%%n" + calcularRestanteEmPorcentagem()
+				+ "\n===========================================================================";
 		return relatorio;
 	}
 
@@ -93,7 +96,7 @@ public class Rifa implements Sorteavel, Relatoravel {
 
 	@Override
 	public double calcularProgressoEmPorcentagem() {
-		double progressoPorcentagem = (100 * arrecadacaoAtual/meta);
+		double progressoPorcentagem = (100 * arrecadacaoAtual / meta);
 		return progressoPorcentagem;
 	}
 
@@ -131,7 +134,7 @@ public class Rifa implements Sorteavel, Relatoravel {
 		if (!prontoParaSorteio()) {
 			throw new SorteioInvalidoException("Meta ainda não foi alcançada");
 		}
-		
+
 		if (sorteado) {
 			throw new SorteioInvalidoException("A rifa já foi sorteada.");
 		}
@@ -146,36 +149,52 @@ public class Rifa implements Sorteavel, Relatoravel {
 		}
 		this.sorteado = true;
 
-		String resultado = 
-				"\n=================================================\n"
+		String resultado = "\n=================================================\n"
 				+ "           NÚMERO SORTEADO COM SUCESSO!           \n"
-				+ "=================================================\n" 
-				+ "Bilhete: " + bilheteGanhador.toString()
+				+ "=================================================\n" + "Bilhete: " + bilheteGanhador.toString()
 				+ "\nCPF do ganhador: " + bilheteGanhador.getComprador().getCpf()
 				+ "\n=================================================\n";
 
 		return resultado;
 	}
-	
+
 	public int contarBilhetes() {
 		return bilhetes.size();
 	}
 
 	@Override
 	public String toString() {
-		return "Código: " + codigo + 
-				"\nPrêmio: " + premio + 
-				"\nValor por bilhete: " + valorBilhete + 
-				"\nMeta: " + meta +
-				"\nArrecadacao atual: " + arrecadacaoAtual + 
-				"\nQuantidade de bilhetes vendidos: " + contarBilhetes() + 
-				"\nSorteado? " + sorteado;
+		return "Código: " + codigo + "\nPrêmio: " + premio + "\nValor por bilhete: " + valorBilhete + "\nMeta: " + meta
+				+ "\nArrecadacao atual: " + arrecadacaoAtual + "\nQuantidade de bilhetes vendidos: " + contarBilhetes()
+				+ "\nSorteado? " + sorteado;
 	}
 
 	@Override
 	public Bilhete buscarBilhete(int numero) {
 		return bilhetes.get(numero);
 	}
-	
-	
+
+	@Override
+	public boolean removerBilhete(int numero) {
+		if (sorteado) {
+			throw new SorteioInvalidoException("Nao e possivel remover bilhete: a rifa ja foi sorteada");
+		}
+
+		Bilhete bilheteRemovido = bilhetes.remove(numero);
+
+		if (bilheteRemovido == null) {
+			return false;
+		}
+		arrecadacaoAtual -= valorBilhete;
+		return true;
+	}
+
+	public void atualizarMetaRifa(double novaMeta) {
+		if (novaMeta <= 0) {
+			throw new LimiteInvalidoException("Meta deve ser maior que zero.");
+		}
+
+		this.meta = novaMeta;
+	}
+
 }

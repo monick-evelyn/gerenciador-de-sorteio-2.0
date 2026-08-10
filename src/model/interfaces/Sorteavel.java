@@ -11,4 +11,5 @@ public interface Sorteavel {
 	boolean prontoParaSorteio();
 	String realizarSorteio();
 	Bilhete buscarBilhete(int numero);
+	boolean removerBilhete(int numero);
 }
