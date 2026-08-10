@@ -10,9 +10,14 @@ import org.junit.Test;
 
 import controller.ControladorSorteio;
 import exception.BilheteInvalidoException;
+import exception.CompradorInvalidoException;
 import exception.SorteioInvalidoException;
+import exception.VendedorInvalidoException;
+import model.Comprador;
+import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
+import model.interfaces.Sorteavel;
 
 public class ControladorTest {
 
@@ -126,15 +131,17 @@ public class ControladorTest {
 	
 	@Test
 	public void deveBuscarSorteioPeloCodigo() {
-		assertTrue(controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0));
+	    controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0);
 
-		Sorteavel sorteio = controlador.buscarSorteioPorCodigo("R001");
+	    Sorteavel sorteio = controlador.buscarSorteioPorCodigo("R001");
+	    assertNotNull(sorteio);
+	    assertTrue(sorteio instanceof Rifa);
 
-		assertNotNull(sorteio);
-		assertEquals("R001", sorteio.getCodigo());
-		assertEquals("Moto 0km", sorteio.getPremio());
-		assertEquals(10.0, sorteio.getValorBilhete());
-		assertEquals(100.0, sorteio.getMeta());
+	    Rifa rifa = (Rifa) sorteio;
+	    assertEquals("R001", rifa.getCodigo());
+	    assertEquals("Moto 0km", rifa.getPremio());
+	    assertEquals(10.0, rifa.getValorBilhete(), 0.001);
+	    assertEquals(100.0, rifa.getMeta(), 0.001);
 	}
 	
 	@Test
@@ -144,7 +151,7 @@ public class ControladorTest {
 		Vendedor vendedorEsperado = controlador.buscarVendedorPorCPF("11122233344");
 
 		assertNotNull(vendedorEsperado);
-		assertEquals("11122233344", vendedorEsperado.getCPF());
+		assertEquals("11122233344", vendedorEsperado.getCpf());
 		assertEquals("Carlos Souza", vendedorEsperado.getNome());
 		assertEquals("83999990000", vendedorEsperado.getTelefone());
 	}
@@ -157,7 +164,7 @@ public class ControladorTest {
 		Comprador compradorEsperado = controlador.buscarCompradorPorCPF("11122233344");
 
 		assertNotNull(compradorEsperado);
-		assertEquals("11122233344", compradorEsperado.getCPF());
+		assertEquals("11122233344", compradorEsperado.getCpf());
 		assertEquals("Carlos Souza", compradorEsperado.getNome());
 		assertEquals("83999990000", compradorEsperado.getTelefone());
 	}
@@ -218,10 +225,10 @@ public class ControladorTest {
 		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
 
 		controlador.venderBilhete("R001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
-		assertFalse(controlador.buscarRifaPorCodigo("R001").prontoParaSorteio());
+		assertFalse(controlador.buscarSorteioPorCodigo("R001").prontoParaSorteio());
 
 		controlador.venderBilhete("R001", 2, "11122233344", "55566677788", FormaDePagamento.PIX);
-		assertTrue(controlador.buscarRifaPorCodigo("R001").prontoParaSorteio());
+		assertTrue(controlador.buscarSorteioPorCodigo("R001").prontoParaSorteio());
 	}
 	
 	@Test(expected = BilheteInvalidoException.class)
@@ -239,7 +246,7 @@ public class ControladorTest {
 		controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0);
 		controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
 		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
-
+		
 		controlador.venderBilhete("R001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
 		controlador.realizarSorteio("R001");
 	}

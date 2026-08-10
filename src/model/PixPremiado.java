@@ -52,6 +52,54 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	        throw new LimiteInvalidoException("Valor do bilhete deve ser maior que zero: " + valorBilhete);
 	    }
 	}
+	
+	
+
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+
+	public String getPremio() {
+		return premio;
+	}
+	public void setPremio(String premio) {
+		this.premio = premio;
+	}
+
+	public double getValorBilhete() {
+		return valorBilhete;
+	}
+	public void setValorBilhete(double valorBilhete) {
+		this.valorBilhete = valorBilhete;
+	}
+
+	public int getMetaBilhetes() {
+		return metaBilhetes;
+	}
+	public void setMetaBilhetes(int metaBilhetes) {
+		this.metaBilhetes = metaBilhetes;
+	}
+
+	public double getArrecadacaoAtual() {
+		return arrecadacaoAtual;
+	}
+	public void setArrecadacaoAtual(double arrecadacaoAtual) {
+		this.arrecadacaoAtual = arrecadacaoAtual;
+	}
+
+	public HashMap<Integer, Bilhete> getBilhetes() {
+		return bilhetes;
+	}
+
+	public boolean isSorteado() {
+		return sorteado;
+	}
+	public void setSorteado(boolean sorteado) {
+		this.sorteado = sorteado;
+	}
 
 	@Override
 	public String gerarRelatorio() {
@@ -158,5 +206,28 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	@Override
 	public Bilhete buscarBilhete(int numero) {
 		return bilhetes.get(numero);
+	}
+
+	@Override
+	public boolean removerBilhete(int numero) {
+		if (sorteado) {
+			throw new SorteioInvalidoException("Nao e possivel remover bilhete: a rifa ja foi sorteada");
+		}
+
+		Bilhete bilheteRemovido = bilhetes.remove(numero);
+
+		if (bilheteRemovido == null) {
+			return false;
+		}
+		arrecadacaoAtual -= valorBilhete;
+		return true;
+	}
+
+	public void atualizarMeta(int novaMeta) {
+		if(novaMeta<=0) {
+			throw new LimiteInvalidoException("Meta deve ser maior que zero.");
+		}
+		this.metaBilhetes=novaMeta;
+		
 	}
 }
