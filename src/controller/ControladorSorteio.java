@@ -5,7 +5,6 @@ import model.Bilhete;
 import model.Comprador;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
-import model.enums.TipoSorteio;
 import model.interfaces.Sorteavel;
 import service.SistemaSorteio;
 

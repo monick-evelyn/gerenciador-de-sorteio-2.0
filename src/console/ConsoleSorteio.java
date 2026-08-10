@@ -13,11 +13,8 @@ import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
 import model.Bilhete;
 import model.Comprador;
-import model.PixPremiado;
-import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
-import model.enums.TipoSorteio;
 
 public class ConsoleSorteio {
 

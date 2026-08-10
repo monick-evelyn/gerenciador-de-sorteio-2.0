@@ -6,12 +6,10 @@ import java.util.List;
 
 import model.Bilhete;
 import model.Comprador;
-import model.Pessoa;
 import model.PixPremiado;
 import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
-import model.enums.TipoSorteio;
 import model.interfaces.Relatoravel;
 import model.interfaces.Sorteavel;
 
@@ -20,7 +18,6 @@ import exception.BilheteNaoEncontradoException;
 import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.LimiteInvalidoException;
-import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
 import exception.VendedorInvalidoException;
