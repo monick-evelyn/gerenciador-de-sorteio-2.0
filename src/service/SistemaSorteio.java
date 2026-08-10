@@ -3,14 +3,14 @@ package service;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import model.Comprador;
+import model.Vendedor;
+import model.interfaces.Sorteavel;
+
 import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
-
-import model.Comprador;
-import model.Vendedor;
-import model.interfaces.Sorteavel;
 
 public class SistemaSorteio {
 	
