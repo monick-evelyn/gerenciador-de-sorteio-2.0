@@ -327,19 +327,62 @@ public class SistemaSorteio {
 		throw new SorteioInvalidoException("Nao e possivel gerar o relatorio");
 
 	}
-	
-	private HashMap<Integer, Bilhete> obterBilhetesDoSorteio(Sorteavel item){
-		if(item instanceof Rifa) {
+
+	private HashMap<Integer, Bilhete> obterBilhetesDoSorteio(Sorteavel item) {
+		if (item instanceof Rifa) {
 			return ((Rifa) item).getBilhetes();
-		}else if(item instanceof PixPremiado){
+		} else if (item instanceof PixPremiado) {
 			return ((PixPremiado) item).getBilhetes();
 		}
 		return null;
 	}
-	/*public String gerarRankingVendedores() {
-		if(vendedores==null ||vendedores.isEmpty()) {
-			throw new  VendedorNaoEncontradoException("Nenhum vendedor encontrado");
+
+	public String gerarRankingVendedores() {
+		if (vendedores == null || vendedores.isEmpty()) {
+			throw new VendedorNaoEncontradoException("Nenhum vendedor encontrado");
+		}
+		return formatarRankingDeVendedores(this.vendedores, "RANKING GERAL DE VENDEDORES");
+
+	}
+	
+	public String gerarRankingVendedoresPorSorteio(String codigoSorteio) {
+		Sorteavel item=buscarSorteioPorCodigo(codigoSorteio);
+		HashMap<Integer,Bilhete>bilhetes=obterBilhetesDoSorteio(item);
+		if (bilhetes == null || bilhetes.isEmpty()) {
+			throw new BilheteNaoEncontradoException("Nenhuma venda encontrada");
 		}
 		
-	}*/
+		List<Vendedor> vendedoresDoSorteio=new ArrayList<>();
+		for(Bilhete bilhete : bilhetes.values()) {
+			vendedoresDoSorteio.add(bilhete.getVendedor());
+		}
+		return formatarRankingDeVendedores(vendedoresDoSorteio, "RANKING DO SORTEIO ("+codigoSorteio+")");
+	}
+
+	private String formatarRankingDeVendedores(List<Vendedor> vendedores, String titulo) {
+		List<Vendedor> ranking = new ArrayList<>(vendedores);
+
+		for (int i = 0; i < ranking.size() - 1; i++) {
+			for (int j = 0; j < ranking.size() - 1 - i; j++) {
+				if (ranking.get(j).getQuantidadeVendas() < ranking.get(j + 1).getQuantidadeVendas()) {
+					Vendedor aux = ranking.get(j);
+
+					ranking.set(j, ranking.get(j + 1));
+					ranking.set(j, aux);
+				}
+			}
+		}
+		String resultado = "";
+
+		resultado = "====================" + titulo + "====================";
+		for (int i = 0; i < ranking.size(); i++) {
+			Vendedor v = ranking.get(i);
+			resultado += ((i + 1) + "º Lugar: " + v.getNome() + " (CPF: " + v.getCpf() + ")" + " - Total Vendido: "
+					+ v.getQuantidadeVendas() + " bilhetes");
+		}
+		resultado += "===============================================================";
+
+		return resultado;
+
+	}
 }
