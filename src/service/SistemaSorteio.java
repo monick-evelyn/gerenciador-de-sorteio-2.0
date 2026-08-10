@@ -17,9 +17,9 @@ import exception.BilheteInvalidoException;
 import exception.BilheteNaoEncontradoException;
 import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
+import exception.PessoaNaoEncontradaException;
 import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
-import exceptions.PessoaNaoEncontradaException;
 
 public class SistemaSorteio {
 
@@ -198,12 +198,12 @@ public class SistemaSorteio {
 
 		throw new PessoaNaoEncontradaException("Nenhuma pessoa com CPF " + cpf + " encontrada.");
 	}
-	
+
 	public Sorteavel buscarSorteioPorCodigo(int codigoSorteio) {
 		Sorteavel item = itens.get(codigoSorteio);
-		
-		if(item==null) {
-			throw new BilheteInvalidoException("Sorteio de codigo: "+codigoSorteio+" nao encontrado.");
+
+		if (item == null) {
+			throw new BilheteInvalidoException("Sorteio de codigo: " + codigoSorteio + " nao encontrado.");
 		}
 		return item;
 	}
