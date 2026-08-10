@@ -127,6 +127,11 @@ public class Rifa implements Sorteavel, Relatoravel {
 				"\nQuantidade de bilhetes vendidos: " + contarBilhetes() + 
 				"\nSorteado? " + sorteado;
 	}
+
+	@Override
+	public Bilhete buscarBilhete(int numero) {
+		return bilhetes.get(numero);
+	}
 	
 	
 }
