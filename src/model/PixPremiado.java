@@ -207,4 +207,27 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	public Bilhete buscarBilhete(int numero) {
 		return bilhetes.get(numero);
 	}
+
+	@Override
+	public boolean removerBilhete(int numero) {
+		if (sorteado) {
+			throw new SorteioInvalidoException("Nao e possivel remover bilhete: a rifa ja foi sorteada");
+		}
+
+		Bilhete bilheteRemovido = bilhetes.remove(numero);
+
+		if (bilheteRemovido == null) {
+			return false;
+		}
+		arrecadacaoAtual -= valorBilhete;
+		return true;
+	}
+
+	public void atualizarMeta(int novaMeta) {
+		if(novaMeta<=0) {
+			throw new LimiteInvalidoException("Meta deve ser maior que zero.");
+		}
+		this.metaBilhetes=novaMeta;
+		
+	}
 }

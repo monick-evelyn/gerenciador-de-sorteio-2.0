@@ -12,12 +12,14 @@ import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
 import model.enums.TipoSorteio;
+import model.interfaces.Relatoravel;
 import model.interfaces.Sorteavel;
 
 import exception.BilheteInvalidoException;
 import exception.BilheteNaoEncontradoException;
 import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
+import exception.LimiteInvalidoException;
 import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
@@ -35,40 +37,40 @@ public class SistemaSorteio {
 		this.vendedores = new ArrayList<>();
 		this.compradores = new ArrayList<>();
 	}
-	
-	public boolean cadastrarRifa(String codigo, String premio, double valorBilhete, double meta) {
-	    if (codigo == null || codigo.isBlank()) {
-	        throw new SorteioInvalidoException("Codigo do sorteio invalido.");
-	    }
-	    if (premio == null || premio.isBlank()) {
-	        throw new SorteioInvalidoException("Premio nao pode ser vazio.");
-	    }
-	    if (itens.containsKey(codigo)) {
-	        throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
-	    }
-	    if (meta <= 0.0) {
-	    	throw new SorteioInvalidoException("Meta insuficiente.");
-	    }
 
-	    Rifa rifa = new Rifa(codigo, premio, valorBilhete, meta);
-	    itens.put(codigo, rifa);
-	    return true;
+	public boolean cadastrarRifa(String codigo, String premio, double valorBilhete, double meta) {
+		if (codigo == null || codigo.isBlank()) {
+			throw new SorteioInvalidoException("Codigo do sorteio invalido.");
+		}
+		if (premio == null || premio.isBlank()) {
+			throw new SorteioInvalidoException("Premio nao pode ser vazio.");
+		}
+		if (itens.containsKey(codigo)) {
+			throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
+		}
+		if (meta <= 0.0) {
+			throw new SorteioInvalidoException("Meta insuficiente.");
+		}
+
+		Rifa rifa = new Rifa(codigo, premio, valorBilhete, meta);
+		itens.put(codigo, rifa);
+		return true;
 	}
 
 	public boolean cadastrarPixPremiado(String codigo, String premio, double valorBilhete, int limiteBilhetes) {
-	    if (codigo == null || codigo.isBlank()) {
-	        throw new SorteioInvalidoException("Codigo do sorteio invalido.");
-	    }
-	    if (premio == null || premio.isBlank()) {
-	        throw new SorteioInvalidoException("Premio nao pode ser vazio.");
-	    }
-	    if (itens.containsKey(codigo)) {
-	        throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
-	    }
+		if (codigo == null || codigo.isBlank()) {
+			throw new SorteioInvalidoException("Codigo do sorteio invalido.");
+		}
+		if (premio == null || premio.isBlank()) {
+			throw new SorteioInvalidoException("Premio nao pode ser vazio.");
+		}
+		if (itens.containsKey(codigo)) {
+			throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
+		}
 
-	    PixPremiado pix = new PixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
-	    itens.put(codigo, pix);
-	    return true;
+		PixPremiado pix = new PixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
+		itens.put(codigo, pix);
+		return true;
 	}
 
 	public boolean cadastrarVendedor(String cpf, String nome, String telefone) {
@@ -110,11 +112,11 @@ public class SistemaSorteio {
 
 	public boolean venderBilhete(String codigoSorteio, int numero, String codigoVendedor, String codigoComprador,
 			FormaDePagamento formaPagamento) {
-		
+
 		Vendedor vendedor = buscarVendedorPorCPF(codigoVendedor);
 		Comprador comprador = buscarCompradorPorCPF(codigoComprador);
 		Sorteavel item = buscarSorteioPorCodigo(codigoSorteio);
-		
+
 		if (numero <= 0) {
 			throw new BilheteInvalidoException("O numero do bilhete nao pode ser negativo.");
 		}
@@ -161,7 +163,7 @@ public class SistemaSorteio {
 		throw new CompradorNaoEncontradoException("Comprador com CPF " + cpf + " nao encontrado.");
 	}
 
-	public Bilhete buscarBilhetePorCodigo(int codigoSorteio, int numeroBilhete) {
+	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
 
 		Sorteavel item = itens.get(codigoSorteio);
 
@@ -208,12 +210,136 @@ public class SistemaSorteio {
 
 	public String realizarSorteio(String codigoSorteio) {
 		Sorteavel sorteio = itens.get(codigoSorteio);
-		
+
 		if (sorteio == null) {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigoSorteio + " nao encontrado.");
 		}
-		
+
 		return sorteio.realizarSorteio();
 	}
 
+	public boolean removerVenda(String codigoSorteio, int numeroBilhete) {
+		Sorteavel item = itens.get(codigoSorteio);
+
+		if (item == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigoSorteio + " nao encontrado.");
+		}
+
+		Bilhete bilheteAux = item.buscarBilhete(numeroBilhete);
+
+		if (bilheteAux == null) {
+			throw new BilheteNaoEncontradoException(
+					"Bilhete " + numeroBilhete + " nao encontrado no item " + codigoSorteio + ".");
+		}
+
+		return item.removerBilhete(numeroBilhete);
+
+	}
+
+	public boolean atualizarMetaRifa(String codigo, double novaMeta) {
+		Sorteavel item = itens.get(codigo);
+
+		if (item == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
+		}
+		if (!(item instanceof Rifa)) {
+			throw new BilheteInvalidoException("O sorteio de codigo " + codigo + " nao e uma Rifa.");
+		}
+
+		Rifa rifa = (Rifa) item;
+		rifa.atualizarMetaRifa(novaMeta);
+		return true;
+	}
+
+	public boolean atualizarMetaPix(String codigo, int novaMeta) {
+		Sorteavel item = itens.get(codigo);
+
+		if (item == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
+		}
+		if (!(item instanceof Rifa)) {
+			throw new BilheteInvalidoException("O sorteio de codigo " + codigo + " nao e uma Rifa.");
+		}
+
+		PixPremiado pix = (PixPremiado) item;
+		pix.atualizarMeta(novaMeta);
+		return true;
+	}
+
+	public String sortearNumero(String codigoRifa) {
+		Sorteavel item = itens.get(codigoRifa);
+
+		if (item == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigoRifa + " nao encontrado.");
+		}
+
+		return item.realizarSorteio();
+	}
+
+	public boolean atualizarNivelDoVendedor(String cpf) {
+		Vendedor vendedorAux = buscarVendedorPorCPF(cpf);
+		return vendedorAux.alterarNivelVendedor();
+	}
+
+	public boolean transformarRifaemPix(String codigo, int metaBilhetes) {
+		Sorteavel item = itens.get(codigo);
+
+		if (item == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
+		}
+		if (!(item instanceof Rifa)) {
+			throw new BilheteInvalidoException("O sorteio de codigo " + codigo + " nao e uma Rifa.");
+		}
+		Rifa rifa = (Rifa) item;
+		if (rifa.isSorteado()) {
+			throw new SorteioInvalidoException("Nao e possivel transformar: a rifa ja foi sorteada.");
+		}
+		if (metaBilhetes < rifa.contarBilhetes()) {
+			throw new LimiteInvalidoException(
+					"A nova meta de bilheres nao pode ser menor que a quantidade de bilhetes ja vendida.");
+		}
+
+		for (Integer numero : rifa.getBilhetes().keySet()) {
+			if (numero < 1 || numero > metaBilhetes) {
+				throw new LimiteInvalidoException(
+						"O bilhete " + numero + " ja vendido fica fora do intervalo da nova meta.");
+			}
+		}
+
+		PixPremiado pix = new PixPremiado(rifa.getCodigo(), rifa.getPremio(), rifa.getValorBilhete(), metaBilhetes);
+		pix.getBilhetes().putAll(rifa.getBilhetes());
+		pix.setArrecadacaoAtual(rifa.getArrecadacaoAtual());
+		itens.put(codigo, pix);
+		return true;
+	}
+
+	public String exibirRelatorioGeralDoSorteio(String codigo) {
+		Sorteavel item = itens.get(codigo);
+
+		if (item == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
+		}
+
+		if (item instanceof Relatoravel) {
+			Relatoravel sorteio = (Relatoravel) item;
+			return sorteio.gerarRelatorio();
+		}
+		throw new SorteioInvalidoException("Nao e possivel gerar o relatorio");
+
+	}
+	
+	private HashMap<Integer, Bilhete> obterBilhetesDoSorteio(Sorteavel item){
+		if(item instanceof Rifa) {
+			return ((Rifa) item).getBilhetes();
+		}else if(item instanceof PixPremiado){
+			return ((PixPremiado) item).getBilhetes();
+		}
+		return null;
+	}
+	/*public String gerarRankingVendedores() {
+		if(vendedores==null ||vendedores.isEmpty()) {
+			throw new  VendedorNaoEncontradoException("Nenhum vendedor encontrado");
+		}
+		
+	}*/
 }
