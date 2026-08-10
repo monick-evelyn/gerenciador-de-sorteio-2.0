@@ -2,6 +2,7 @@ package service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import model.Bilhete;
 import model.Comprador;
@@ -18,64 +19,56 @@ import exception.BilheteNaoEncontradoException;
 import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.PessoaNaoEncontradaException;
+import exception.SorteioInvalidoException;
+import exception.SorteioNaoEncontradoException;
 import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
 
 public class SistemaSorteio {
 
-	private HashMap<Integer, Sorteavel> itens;
-	private ArrayList<Vendedor> vendedores;
-	private ArrayList<Comprador> compradores;
+	private HashMap<String, Sorteavel> itens;
+	private List<Vendedor> vendedores;
+	private List<Comprador> compradores;
 
 	public SistemaSorteio() {
 		this.itens = new HashMap<>();
 		this.vendedores = new ArrayList<>();
 		this.compradores = new ArrayList<>();
 	}
+	
+	public boolean cadastrarRifa(String codigo, String premio, double valorBilhete, double meta) {
+	    if (codigo == null || codigo.isBlank()) {
+	        throw new SorteioInvalidoException("Codigo do sorteio invalido.");
+	    }
+	    if (premio == null || premio.isBlank()) {
+	        throw new SorteioInvalidoException("Premio nao pode ser vazio.");
+	    }
+	    if (itens.containsKey(codigo)) {
+	        throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
+	    }
+	    if (meta <= 0.0) {
+	    	throw new SorteioInvalidoException("Meta insuficiente.");
+	    }
 
-	public boolean cadastrarSorteio(int codigoSorteio, TipoSorteio tipo, String premio, double valorBilhete,
-			double valorParaArrecadar) {
-		if (codigoSorteio <= 0) {
-			throw new BilheteInvalidoException("Codigo do sorteio invalido.");
-		}
+	    Rifa rifa = new Rifa(codigo, premio, valorBilhete, meta);
+	    itens.put(codigo, rifa);
+	    return true;
+	}
 
-		if (premio == null || premio.isBlank()) {
-			throw new BilheteInvalidoException("Nome do bilhete nao pode ser vazio.");
-		}
+	public boolean cadastrarPixPremiado(String codigo, String premio, double valorBilhete, int limiteBilhetes) {
+	    if (codigo == null || codigo.isBlank()) {
+	        throw new SorteioInvalidoException("Codigo do sorteio invalido.");
+	    }
+	    if (premio == null || premio.isBlank()) {
+	        throw new SorteioInvalidoException("Premio nao pode ser vazio.");
+	    }
+	    if (itens.containsKey(codigo)) {
+	        throw new SorteioInvalidoException("Ja existe um sorteio cadastrado com esse codigo.");
+	    }
 
-		if (tipo == null) {
-			throw new BilheteInvalidoException("O tipo do sorteio precisa ser informado.");
-		}
-
-		if (premio == null || premio.isBlank()) {
-			throw new BilheteInvalidoException("Premio nao pode ser vazio.");
-		}
-
-		if (valorParaArrecadar <= 0) {
-			throw new BilheteInvalidoException("O valor para arrecadar deve ser maior que zero.");
-		}
-
-		if (itens.containsKey(codigoSorteio)) {
-			throw new BilheteInvalidoException("Ja existe um sorteio cadastrado.");
-		}
-
-		Sorteavel novoSorteio;
-
-		switch (tipo) {
-		case RIFA:
-			novoSorteio = new Rifa(String.valueOf(codigoSorteio), premio, valorBilhete, valorParaArrecadar);
-			break;
-
-		case PIXPREMIADO:
-			int metaBilhetes = (int) valorParaArrecadar;
-			novoSorteio = new PixPremiado(String.valueOf(codigoSorteio), premio, valorBilhete, metaBilhetes);
-			break;
-		default:
-			throw new BilheteInvalidoException("Tipo de sorteio invalido");
-
-		}
-		itens.put(codigoSorteio, novoSorteio);
-		return true;
+	    PixPremiado pix = new PixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
+	    itens.put(codigo, pix);
+	    return true;
 	}
 
 	public boolean cadastrarVendedor(String cpf, String nome, String telefone) {
@@ -115,9 +108,13 @@ public class SistemaSorteio {
 		return true;
 	}
 
-	public boolean cadastrarBilhete(int codigoSorteio, int numero, Vendedor vendedor, Comprador comprador,
+	public boolean venderBilhete(String codigoSorteio, int numero, String codigoVendedor, String codigoComprador,
 			FormaDePagamento formaPagamento) {
-
+		
+		Vendedor vendedor = buscarVendedorPorCPF(codigoVendedor);
+		Comprador comprador = buscarCompradorPorCPF(codigoComprador);
+		Sorteavel item = buscarSorteioPorCodigo(codigoSorteio);
+		
 		if (numero <= 0) {
 			throw new BilheteInvalidoException("O numero do bilhete nao pode ser negativo.");
 		}
@@ -133,8 +130,6 @@ public class SistemaSorteio {
 		if (formaPagamento == null) {
 			throw new BilheteInvalidoException("Essa forma de pagamento nao existe.");
 		}
-
-		Sorteavel item = itens.get(codigoSorteio);
 
 		if (item == null) {
 			throw new BilheteInvalidoException("Item de codigo " + codigoSorteio + " nao encontrado.");
@@ -183,29 +178,42 @@ public class SistemaSorteio {
 		return bilhete;
 	}
 
-	public Pessoa buscarPessoaPorCPF(String cpf) {
-		for (Vendedor vendedor : vendedores) {
-			if (vendedor.getCpf().equalsIgnoreCase(cpf)) {
-				return vendedor;
-			}
-		}
-
-		for (Comprador comprador : compradores) {
-			if (comprador.getCpf().equalsIgnoreCase(cpf)) {
-				return comprador;
-			}
-		}
-
-		throw new PessoaNaoEncontradaException("Nenhuma pessoa com CPF " + cpf + " encontrada.");
-	}
-
-	public Sorteavel buscarSorteioPorCodigo(int codigoSorteio) {
-		Sorteavel item = itens.get(codigoSorteio);
+	public Sorteavel buscarSorteioPorCodigo(String codigo) {
+		Sorteavel item = itens.get(codigo);
 
 		if (item == null) {
-			throw new BilheteInvalidoException("Sorteio de codigo: " + codigoSorteio + " nao encontrado.");
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
 		}
 		return item;
+	}
+
+	public int contarSorteios() {
+		return itens.size();
+	}
+
+	public int contarVendedores() {
+		return vendedores.size();
+	}
+
+	public int contarCompradores() {
+		return compradores.size();
+	}
+
+	public String exibirTodosOsSorteios() {
+		if (contarSorteios() == 0) {
+			return "Nenhum sorteio encontrado.";
+		}
+		return itens.toString();
+	}
+
+	public String realizarSorteio(String codigoSorteio) {
+		Sorteavel sorteio = itens.get(codigoSorteio);
+		
+		if (sorteio == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigoSorteio + " nao encontrado.");
+		}
+		
+		return sorteio.realizarSorteio();
 	}
 
 }

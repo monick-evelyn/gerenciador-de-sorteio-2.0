@@ -52,6 +52,54 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	        throw new LimiteInvalidoException("Valor do bilhete deve ser maior que zero: " + valorBilhete);
 	    }
 	}
+	
+	
+
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+
+	public String getPremio() {
+		return premio;
+	}
+	public void setPremio(String premio) {
+		this.premio = premio;
+	}
+
+	public double getValorBilhete() {
+		return valorBilhete;
+	}
+	public void setValorBilhete(double valorBilhete) {
+		this.valorBilhete = valorBilhete;
+	}
+
+	public int getMetaBilhetes() {
+		return metaBilhetes;
+	}
+	public void setMetaBilhetes(int metaBilhetes) {
+		this.metaBilhetes = metaBilhetes;
+	}
+
+	public double getArrecadacaoAtual() {
+		return arrecadacaoAtual;
+	}
+	public void setArrecadacaoAtual(double arrecadacaoAtual) {
+		this.arrecadacaoAtual = arrecadacaoAtual;
+	}
+
+	public HashMap<Integer, Bilhete> getBilhetes() {
+		return bilhetes;
+	}
+
+	public boolean isSorteado() {
+		return sorteado;
+	}
+	public void setSorteado(boolean sorteado) {
+		this.sorteado = sorteado;
+	}
 
 	@Override
 	public String gerarRelatorio() {

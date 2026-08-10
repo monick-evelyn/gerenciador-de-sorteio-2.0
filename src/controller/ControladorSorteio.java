@@ -15,9 +15,12 @@ public class ControladorSorteio {
 		sistema = new SistemaSorteio();
 	}
 
-	public boolean cadastrarSorteio(int codigoSorteio, TipoSorteio tipo, String premio, double valorBilhete,
-			double valorParaArrecadar) {
-		return sistema.cadastrarSorteio(codigoSorteio, tipo, premio, valorBilhete, valorParaArrecadar);
+	public boolean cadastrarRifa(String codigoSorteio, String premio, double valorBilhete, double valorParaArrecadar) {
+		return sistema.cadastrarRifa(codigoSorteio, premio, valorBilhete, valorParaArrecadar);
+	}
+	
+	public boolean cadastrarPixPremiado(String codigo, String premio, double valorBilhete, int limiteBilhetes) {
+		return sistema.cadastrarPixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
 	}
 
 	public boolean cadastrarVendedor(String cpf, String nome, String telefone) {
@@ -28,9 +31,9 @@ public class ControladorSorteio {
 		return sistema.cadastrarComprador(cpf, nome, telefone);
 	}
 
-	public boolean cadastrarBilhete(int codigoSorteio, int numero, Vendedor vendedor, Comprador comprador,
+	public boolean venderBilhete(String codigoSorteio, int numero, String codigoVendedor, String codigoComprador,
 			FormaDePagamento formaPagamento) {
-		return sistema.cadastrarBilhete(codigoSorteio, numero, vendedor, comprador, formaPagamento);
+		return sistema.venderBilhete(codigoSorteio, numero, codigoVendedor, codigoComprador, formaPagamento);
 	}
 
 	public Vendedor buscarVendedorPorCPF(String cpf) {
@@ -45,8 +48,29 @@ public class ControladorSorteio {
 		return sistema.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
 	}
 
-	public Sorteavel buscarSorteioPorCodigo(int codigoSorteio) {
-		return sistema.buscarSorteioPorCodigo(codigoSorteio);
+	public Sorteavel buscarSorteioPorCodigo(String codigo) {
+		return sistema.buscarSorteioPorCodigo(codigo);
+	}
+
+	public int contarSorteios() {
+		return sistema.contarSorteios();
+	}
+
+	public int contarVendedores() {
+		return sistema.contarVendedores();
+	}
+
+	public int contarCompradores() {
+		return sistema.contarCompradores();
+	}
+
+	public String exibirTodosOsSorteios() {
+		return sistema.exibirTodosOsSorteios();
+	}
+
+	public String realizarSorteio(String codigoSorteio) {
+		return sistema.realizarSorteio(codigoSorteio);
+		
 	}
 
 }

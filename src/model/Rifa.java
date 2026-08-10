@@ -28,6 +28,50 @@ public class Rifa implements Sorteavel, Relatoravel {
 		this.bilhetes = new HashMap<>();
 		this.sorteado = false;
 	}
+	
+	public String getCodigo() {
+		return codigo;
+	}
+
+
+	public String getPremio() {
+		return premio;
+	}
+	public void setPremio(String premio) {
+		this.premio = premio;
+	}
+
+	public double getValorBilhete() {
+		return valorBilhete;
+	}
+	public void setValorBilhete(double valorBilhete) {
+		this.valorBilhete = valorBilhete;
+	}
+
+	public double getMeta() {
+		return meta;
+	}
+	public void setMeta(double meta) {
+		this.meta = meta;
+	}
+
+	public double getArrecadacaoAtual() {
+		return arrecadacaoAtual;
+	}
+	public void setArrecadacaoAtual(double arrecadacaoAtual) {
+		this.arrecadacaoAtual = arrecadacaoAtual;
+	}
+
+	public HashMap<Integer, Bilhete> getBilhetes() {
+		return bilhetes;
+	}
+
+	public boolean isSorteado() {
+		return sorteado;
+	}
+	public void setSorteado(boolean sorteado) {
+		this.sorteado = sorteado;
+	}
 
 	@Override
 	public String gerarRelatorio() {

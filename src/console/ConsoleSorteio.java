@@ -214,7 +214,7 @@ public class ConsoleSorteio {
 
 	private void buscarSorteioPorCodigo() {
 		try {
-			int codigoSorteio=lerInteiro("Codigo do sorteio: ");
+			String codigoSorteio=lerTexto("Codigo do sorteio: ");
 			controlador.buscarSorteioPorCodigo(codigoSorteio);
 		} catch(SorteioNaoEncontradoException e) {
 			System.out.println("Erro ao buscar sorteio: "+ e.getMessage());
@@ -261,7 +261,7 @@ public class ConsoleSorteio {
 				double valorBilhete = lerDouble("Valor do bilhete: ");
 				double valorParaArrecadar = lerDouble("Valor para arrecadar: ");
 
-				controlador.cadastrarSorteio(codigo, tipo, premio, valorBilhete, valorParaArrecadar);
+				controlador.cadastrarRifa(codigo, tipo, premio, valorBilhete, valorParaArrecadar);
 				break;
 
 			case 2:
@@ -272,7 +272,7 @@ public class ConsoleSorteio {
 				valorBilhete = lerDouble("Valor do bilhete: ");
 				double metaBilhetes = lerInteiro("Meta de bilhetes: ");
 
-				controlador.cadastrarSorteio(codigo, tipo, premio, valorBilhete, metaBilhetes);
+				controlador.cadastrarPixPremiado(codigo, tipo, premio, valorBilhete, metaBilhetes);
 				break;
 
 			default:
