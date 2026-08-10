@@ -102,4 +102,24 @@ public class ControladorSorteio {
 		return sistema.exibirRelatorioGeralDoSorteio(codigo);
 	}
 	
+	public String gerarRankingVendedores() {
+		return sistema.gerarRankingVendedores();
+	}
+	
+	public String gerarRankingVendedoresPorSorteio(String codigoSorteio) {
+		return sistema.gerarRankingVendedoresPorSorteio(codigoSorteio);
+	}
+	
+	public String listarVendasPorVendedor(String cpf) {
+		return sistema.listarVendasPorVendedor(cpf);
+	}
+	
+	public String exibirTodosOsCompradores() {
+		return sistema.exibirTodosOsCompradores();
+	}
+	
+	public String exibirHistoricoPorComprador(String cpf) {
+		return sistema.exibirHistoricoPorComprador(cpf);
+	}
+
 }

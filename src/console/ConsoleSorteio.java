@@ -156,38 +156,69 @@ public class ConsoleSorteio {
 	}
 
 	private void exibirHistoricoPorComprador() {
-		// TODO Auto-generated method stub
+		try {
+			String cpf = lerTexto("CPF: ");
+			String historico = controlador.exibirHistoricoPorComprador(cpf);
+			System.out.println(historico);
+		} catch (CompradorNaoEncontradoException | BilheteNaoEncontradoException e) {
+			System.out.println("Erro ao sortear: " + e.getMessage());
+		}
 
 	}
 
 	private void exibirFunilDeCompradores() {
-		// TODO Auto-generated method stub
+		try {
+			String compradores=controlador.exibirTodosOsCompradores();
+			System.out.println(compradores);
+		}catch(CompradorNaoEncontradoException e) {
+			System.out.println("Erro: "+e.getMessage());
+		}
 
 	}
 
 	private void listarVendasPorVendedor() {
-		// TODO Auto-generated method stub
+		try {
+			String cpf = lerTexto("CPF: ");
+			String vendas=controlador.listarVendasPorVendedor(cpf);
+			System.out.println(vendas);
+		} catch (VendedorNaoEncontradoException | BilheteNaoEncontradoException | VendedorInvalidoException e) {
+			System.out.println("Erro: " + e.getMessage());
+
+		}
 
 	}
 
 	private void listarRankingDeVendedoresPorSorteio() {
-		// TODO Auto-generated method stub
+		try {
+			String codigoSorteio = lerTexto("Código sorteio: ");
+			String ranking = controlador.gerarRankingVendedoresPorSorteio(codigoSorteio);
+			System.out.println(ranking);
+		} catch (VendedorNaoEncontradoException e) {
+			System.out.println("Erro: " + e.getMessage());
+
+		}
 
 	}
 
 	private void listarRankingDeVendedores() {
-		// TODO Auto-generated method stub
+		try {
+			String ranking = controlador.gerarRankingVendedores();
+			System.out.println(ranking);
+		} catch (VendedorNaoEncontradoException e) {
+			System.out.println("Erro: " + e.getMessage());
+
+		}
 
 	}
 
 	private void listarRelatorioGeralDoSorteio() {
-		String codigoSorteio = lerTexto("Código sorteio: ");
 		try {
-			String relatorio= controlador.exibirRelatorioGeralDoSorteio(codigoSorteio);
+			String codigoSorteio = lerTexto("Código sorteio: ");
+			String relatorio = controlador.exibirRelatorioGeralDoSorteio(codigoSorteio);
 			System.out.println(relatorio);
-		}catch(SorteioNaoEncontradoException | SorteioInvalidoException e){
-			System.out.println("Erro :"+e.getMessage());
-			
+		} catch (SorteioNaoEncontradoException | SorteioInvalidoException e) {
+			System.out.println("Erro :" + e.getMessage());
+
 		}
 
 	}
