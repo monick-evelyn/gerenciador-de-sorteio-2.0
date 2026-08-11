@@ -33,6 +33,10 @@ public class Vendedor extends Pessoa {
 		return quantidadeVendas;
 	}
 	
+	public void setQuantidadeVendas(int quantidadeVendas) {
+		this.quantidadeVendas = quantidadeVendas;
+	}
+	
 	public NivelVendedor getNivel() {
 		return nivel;
 	}

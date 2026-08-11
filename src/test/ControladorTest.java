@@ -31,6 +31,7 @@ import model.PixPremiado;
 import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
+import model.enums.NivelVendedor;
 import model.interfaces.Sorteavel;
 
 public class ControladorTest {
@@ -262,8 +263,8 @@ public class ControladorTest {
 		controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
 		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
 
-		controlador.venderBilhete("P001", 11, "11122233344", "55566677788", FormaDePagamento.PIX);
-		controlador.venderBilhete("P001", -1, "11122233344", "55566677788", FormaDePagamento.PIX);
+		assertFalse(controlador.venderBilhete("P001", 11, "11122233344", "55566677788", FormaDePagamento.PIX));
+		assertFalse(controlador.venderBilhete("P001", -1, "11122233344", "55566677788", FormaDePagamento.PIX));
 	}
 	
 	@Test
@@ -273,7 +274,7 @@ public class ControladorTest {
 		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
 		
 		controlador.venderBilhete("R001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
-		controlador.realizarSorteio("R001");
+		assertEquals("Não foi possível realizar o sorteio", controlador.realizarSorteio("R001"));
 	}
 
 	// ============================================================
@@ -290,7 +291,7 @@ public class ControladorTest {
 
 	@Test
 	public void vendedorDeveSubirParaPrataAoCompletar15Vendas() {
-		controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 1500.0);
+		controlador.cadastrarRifa("R001", "Moto 0km", 5.0, 15000.0);
 		controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
 		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
 
@@ -301,5 +302,63 @@ public class ControladorTest {
 		Vendedor vendedor = controlador.buscarVendedorPorCPF("11122233344");
 		assertEquals(15, vendedor.getQuantidadeVendas());
 		assertEquals("PRATA", vendedor.getNivel().name());
+	}
+	
+	@Test
+	public void vendedorDeveSubirParaOuroAoCompletar50Vendas() {
+		controlador.cadastrarRifa("R001", "Moto 0km", 5.0, 15000.0);
+		controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
+		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
+
+		for (int i = 1; i <= 50; i++) {
+			controlador.venderBilhete("R001", i, "11122233344", "55566677788", FormaDePagamento.PIX);
+		}
+
+		Vendedor vendedor = controlador.buscarVendedorPorCPF("11122233344");
+		assertEquals(50, vendedor.getQuantidadeVendas());
+		assertEquals("OURO", vendedor.getNivel().name());
+	}
+	
+	@Test
+	public void vendedorDeveSubirParaDiamanteAoCompletar100Vendas() {
+		controlador.cadastrarRifa("R001", "Moto 0km", 5.0, 15000.0);
+		controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
+		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
+		
+		for (int i = 1; i <= 100; i++) {
+			controlador.venderBilhete("R001", i, "11122233344", "55566677788", FormaDePagamento.PIX);
+		}
+
+		Vendedor vendedor = controlador.buscarVendedorPorCPF("11122233344");
+		assertEquals(100, vendedor.getQuantidadeVendas());
+		assertEquals("DIAMANTE", vendedor.getNivel().name());
+	}
+	
+	//=================================================================================
+
+	@Test
+	public void naoDeveVenderBilheteParaVendedorInexistente() {
+	    controlador.cadastrarRifa("R001", "Moto", 10.0, 100.0);
+	    assertFalse(controlador.venderBilhete("R001", 1, "00000000000", "11111111111", FormaDePagamento.PIX));
+	}
+
+	@Test
+	public void naoDeveVenderBilheteAposSorteioJaRealizado() {
+	    controlador.cadastrarPixPremiado("P001", "Premio", 5.0, 1);
+	    controlador.cadastrarVendedor("11122233344", "Carlos", "83999990000");
+	    controlador.cadastrarComprador("55566677788", "Ana", "83988880000");
+	    controlador.venderBilhete("P001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
+	    
+	    controlador.realizarSorteio("P001");
+	    assertFalse(controlador.venderBilhete("P001", 1, "11122233344", "55566677788", FormaDePagamento.PIX));
+	}
+	
+	@Test
+	public void consultarSorteioDeveFuncionarPolimorficamenteParaRifaEPixPremiado() {
+	    controlador.cadastrarRifa("R001", "Moto", 10.0, 100.0);
+	    controlador.cadastrarPixPremiado("P001", "R$500", 5.0, 10);
+
+	    assertTrue(controlador.consultarSorteioPorCodigo("R001").contains("R001"));
+	    assertTrue(controlador.consultarSorteioPorCodigo("P001").contains("P001"));
 	}
 }

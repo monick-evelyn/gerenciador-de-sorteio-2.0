@@ -304,36 +304,40 @@ public class ConsoleSorteio {
 	}
 
 	private void venderBilhete() {
+		String codigoSorteio = lerTexto("Código sorteio: ");
+		int numeroBilhete = lerInteiro("Número do bilhete: ");
+		String codigoVendedor = lerTexto("Código vendedor: ");
+		String codigoComprador = lerTexto("Código comprador: ");
+		
+		FormaDePagamento formaPagamento = null;
+		menuExibirFormaDePagamento();
+		int opcao = lerInteiro("Opcao: ");
 
+		switch (opcao) {
+		case 1:
+			formaPagamento = FormaDePagamento.PIX;
+			break;
+		case 2:
+			formaPagamento = FormaDePagamento.DINHEIRO;
+			break;
+		case 3:
+			formaPagamento = FormaDePagamento.CARTAO;
+			break;
+		case 0:
+			return;
+		default:
+			System.out.println("Opcao invalida.");
+		}
+		
 		try {
-			String codigoSorteio = lerTexto("Código sorteio: ");
-			int numeroBilhete = lerInteiro("Número do bilhete: ");
-			String codigoVendedor = lerTexto("Código vendedor: ");
-			String codigoComprador = lerTexto("Código comprador: ");
-			
-			FormaDePagamento formaPagamento = null;
-			menuExibirFormaDePagamento();
-			int opcao = lerInteiro("Opcao: ");
-
-			switch (opcao) {
-			case 1:
-				formaPagamento = FormaDePagamento.PIX;
-				break;
-			case 2:
-				formaPagamento = FormaDePagamento.DINHEIRO;
-				break;
-			case 3:
-				formaPagamento = FormaDePagamento.CARTAO;
-				break;
-			case 0:
-				return;
-			default:
-				System.out.println("Opcao invalida.");
-			}
-
 			if (controlador.venderBilhete(codigoSorteio, numeroBilhete, codigoVendedor, codigoComprador,
 					formaPagamento)) {
 				System.out.println("Bilhete vendido!");
+				
+				if (controlador.atualizarNivelDoVendedor(codigoVendedor)) {
+			        Vendedor vendedor = controlador.buscarVendedorPorCPF(codigoVendedor);
+			        System.out.println("Parabéns! O vendedor subiu para o nível " + vendedor.getNivel() + "!");
+			    }
 			}
 
 		} catch (BilheteInvalidoException e) {
