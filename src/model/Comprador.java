@@ -20,6 +20,6 @@ public class Comprador extends Pessoa {
 	@Override
 	public String toString() {
 		return super.toString() + 
-				"Quantidade de bilhetes comprados: " + quantidadeBilhetesComprados;
+				"\nQuantidade de bilhetes comprados: " + quantidadeBilhetesComprados + "\n";
 	}
 }
