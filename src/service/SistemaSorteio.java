@@ -264,7 +264,7 @@ public class SistemaSorteio {
 
 		String lista = "";
 		for (Sorteavel sorteio : itens.values()) {
-			lista += sorteio.toString();
+			lista += "\n" + sorteio.toString() + "\n";
 		}
 
 		return lista;
