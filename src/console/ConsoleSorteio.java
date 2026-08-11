@@ -13,7 +13,6 @@ import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
 import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
-import model.Bilhete;
 import model.Comprador;
 import model.Pessoa;
 import model.Vendedor;
