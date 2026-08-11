@@ -172,23 +172,11 @@ public class SistemaSorteio {
 		if (sorteio == null) {
 			return null;
 		}
-
-		if (sorteio instanceof Rifa) {
-			Rifa rifa = (Rifa) sorteio;
-			try {
-				return rifa.buscarBilhete(numeroBilhete);
-			} catch (Exception e) {
-				System.out.println("Erro: " + e.getMessage());
-			}
-		}
-
-		if (sorteio instanceof PixPremiado) {
-			PixPremiado pix = (PixPremiado) sorteio;
-			try {
-				return pix.buscarBilhete(numeroBilhete);
-			} catch (Exception e) {
-				System.out.println("Erro: " + e.getMessage());
-			}
+		
+		try {
+			return sorteio.buscarBilhete(numeroBilhete);
+		} catch (Exception e) {
+			System.out.println("Erro: " + e.getMessage());
 		}
 
 		return null;
@@ -231,17 +219,8 @@ public class SistemaSorteio {
 		if (sorteio == null) {
 			return "Nenhum sorteio encontrado.";
 		}
-
-		if (sorteio instanceof Rifa) {
-			Rifa rifa = (Rifa) sorteio;
-			return rifa.toString();
-		}
-
-		if (sorteio instanceof PixPremiado) {
-			PixPremiado pix = (PixPremiado) sorteio;
-			return pix.toString();
-		}
-		return "Nenhum sorteio encontrado.";
+		
+		return sorteio.toString();
 	}
 
 	public int contarSorteios() {
