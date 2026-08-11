@@ -47,6 +47,10 @@ public class ControladorSorteio {
 	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
 		return sistema.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
 	}
+	
+	public String consularBilhetePorCodigo(String codigoSorteio, int numeroBilhete){
+		return sistema.consultarBilhetePorCodigo(codigoSorteio, numeroBilhete);
+	}
 
 	public Sorteavel buscarSorteioPorCodigo(String codigo) {
 		return sistema.buscarSorteioPorCodigo(codigo);

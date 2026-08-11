@@ -340,7 +340,7 @@ public class ConsoleSorteio {
 			    }
 			}
 
-		} catch (BilheteInvalidoException e) {
+		} catch (Exception e) {
 			System.out.println("Erro ao vender bilhete: " + e.getMessage());
 		}
 
@@ -351,10 +351,12 @@ public class ConsoleSorteio {
 			String cpf = lerTexto("CPF: ");
 			Vendedor vendedor = controlador.buscarVendedorPorCPF(cpf);
 			if (vendedor != null) {
-				System.out.println(vendedor.toString());
+				System.out.println("Vendedor encontrado: \n" + vendedor.toString());
+				return;
 			}
-		} catch (CompradorNaoEncontradoException e) {
+		} catch (VendedorInvalidoException e) { //nao imprime a exption message
 			System.out.println("Erro ao buscar vendedor: " + e.getMessage());
+			return;
 		}
 
 	}
@@ -376,11 +378,8 @@ public class ConsoleSorteio {
 		try {
 			String codigoSorteio = lerTexto("Codigo do sorteio: ");
 			int numeroBilhete = lerInteiro("Numero do bilhete: ");
-			Bilhete bilhete = controlador.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
-
-			if (bilhete != null) {
-				System.out.println(bilhete.toString());
-			}
+			
+			System.out.println(controlador.consularBilhetePorCodigo(codigoSorteio, numeroBilhete));
 
 		} catch (BilheteNaoEncontradoException e) {
 			System.out.println("Erro ao buscar bilhete: " + e.getMessage());
