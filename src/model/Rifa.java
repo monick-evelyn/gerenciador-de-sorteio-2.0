@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.Random;
 
 import exception.BilheteInvalidoException;
+import exception.DadosInvalidosException;
 import exception.LimiteInvalidoException;
+import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
 import model.interfaces.Relatoravel;
@@ -21,6 +23,11 @@ public class Rifa implements Sorteavel, Relatoravel {
 	private boolean sorteado;
 
 	public Rifa(String codigo, String premio, double valorBilhete, double meta) {
+		validarTexto(codigo);
+		validarTexto(premio);
+		validarValorBilhete(valorBilhete);
+		validarMeta(meta);
+
 		this.codigo = codigo;
 		this.premio = premio;
 		this.valorBilhete = valorBilhete;
@@ -28,6 +35,24 @@ public class Rifa implements Sorteavel, Relatoravel {
 		this.arrecadacaoAtual = 0;
 		this.bilhetes = new HashMap<>();
 		this.sorteado = false;
+	}
+
+	private void validarMeta(double meta) {
+		if (meta <= 0) {
+			throw new LimiteInvalidoException("A meta deve ser maior que zero.");
+		}
+	}
+
+	private void validarValorBilhete(double valorBilhete) {
+		if (valorBilhete <= 0) {
+			throw new LimiteInvalidoException("Valor do bilhete deve ser maior que zero: " + valorBilhete);
+		}
+	}
+
+	private void validarTexto(String texto) {
+		if (texto.isBlank()) {
+			throw new DadosInvalidosException(texto);
+		}
 	}
 
 	public String getCodigo() {
@@ -38,24 +63,12 @@ public class Rifa implements Sorteavel, Relatoravel {
 		return premio;
 	}
 
-	public void setPremio(String premio) {
-		this.premio = premio;
-	}
-
 	public double getValorBilhete() {
 		return valorBilhete;
 	}
 
-	public void setValorBilhete(double valorBilhete) {
-		this.valorBilhete = valorBilhete;
-	}
-
 	public double getMeta() {
 		return meta;
-	}
-
-	public void setMeta(double meta) {
-		this.meta = meta;
 	}
 
 	public double getArrecadacaoAtual() {
@@ -80,12 +93,14 @@ public class Rifa implements Sorteavel, Relatoravel {
 
 	@Override
 	public String gerarRelatorio() {
-		String relatorio = "\n============================== RELATÓRIO GERAL =============================="
-				+ "\nPROGRESSO: =================================================================="
-				+ "\nMeta de arrecadação: R$ %.2f%n" + meta + "\nValor Arrecadado:    R$ %.2f%n" + arrecadacaoAtual
-				+ "\nBilhetes vendidos: " + contarBilhetes() + "\nProgresso: %.1f%%%n"
-				+ calcularProgressoEmPorcentagem() + "Restante para meta: %.1f%%%n" + calcularRestanteEmPorcentagem()
-				+ "\n===========================================================================";
+		String relatorio = String.format(
+				"\n============================== RELATÓRIO GERAL =============================="
+						+ "\nPROGRESSO: =================================================================="
+						+ "\nMeta de arrecadação: R$ %.2f%n" + "\nValor Arrecadado:    R$ %.2f%n"
+						+ "\nBilhetes vendidos: " + contarBilhetes() + "\nProgresso: %.1f%%%n"
+						+ "\nRestante para meta: %.1f%%%n"
+						+ "\n===========================================================================",
+				meta, arrecadacaoAtual, calcularProgressoEmPorcentagem(), calcularRestanteEmPorcentagem());
 		return relatorio;
 	}
 
@@ -107,6 +122,14 @@ public class Rifa implements Sorteavel, Relatoravel {
 		}
 		if (sorteado) {
 			throw new SorteioInvalidoException("A rifa já foi sorteada.");
+		}
+
+		if (vendedor == null) {
+			throw new PessoaNaoEncontradaException("Vendedor não encontrado.");
+		}
+
+		if (comprador == null) {
+			throw new PessoaNaoEncontradaException("Comprador não encontrado.");
 		}
 
 		Bilhete bilhete = new Bilhete(numero, vendedor, comprador, pagamento);

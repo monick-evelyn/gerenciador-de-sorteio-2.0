@@ -3,9 +3,9 @@ package controller;
 
 import model.Bilhete;
 import model.Comprador;
+import model.Pessoa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
-import model.enums.TipoSorteio;
 import model.interfaces.Sorteavel;
 import service.SistemaSorteio;
 
@@ -49,8 +49,16 @@ public class ControladorSorteio {
 		return sistema.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
 	}
 
+	public String consularBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
+		return sistema.consultarBilhetePorCodigo(codigoSorteio, numeroBilhete);
+	}
+
 	public Sorteavel buscarSorteioPorCodigo(String codigo) {
 		return sistema.buscarSorteioPorCodigo(codigo);
+	}
+
+	public String consultarSorteioPorCodigo(String codigo) {
+		return sistema.consultarSorteioPorCodgigo(codigo);
 	}
 
 	public int contarSorteios() {
@@ -93,7 +101,7 @@ public class ControladorSorteio {
 	public boolean atualizarNivelDoVendedor(String cpf) {
 		return sistema.atualizarNivelDoVendedor(cpf);
 	}
-	
+
 	public boolean transformarRifaemPix(String codigo, int metaBilhetes) {
 		return sistema.transformarRifaemPix(codigo, metaBilhetes);
 	}
@@ -101,25 +109,28 @@ public class ControladorSorteio {
 	public String exibirRelatorioGeralDoSorteio(String codigo) {
 		return sistema.exibirRelatorioGeralDoSorteio(codigo);
 	}
-	
+
 	public String gerarRankingVendedores() {
 		return sistema.gerarRankingVendedores();
 	}
-	
+
 	public String gerarRankingVendedoresPorSorteio(String codigoSorteio) {
 		return sistema.gerarRankingVendedoresPorSorteio(codigoSorteio);
 	}
-	
+
 	public String listarVendasPorVendedor(String cpf) {
 		return sistema.listarVendasPorVendedor(cpf);
 	}
-	
+
 	public String exibirTodosOsCompradores() {
 		return sistema.exibirTodosOsCompradores();
 	}
-	
+
 	public String exibirHistoricoPorComprador(String cpf) {
 		return sistema.exibirHistoricoPorComprador(cpf);
 	}
 
+	public Pessoa buscarPessoaPorCPF(String cpf) {
+		return sistema.buscarPessoaPorCPF(cpf);
+	}
 }

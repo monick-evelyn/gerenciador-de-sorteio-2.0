@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.Random;
 
 import exception.BilheteInvalidoException;
+import exception.DadosInvalidosException;
 import exception.LimiteInvalidoException;
+import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
 import model.interfaces.Relatoravel;
@@ -21,8 +23,11 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	private boolean sorteado;
 	
 	public PixPremiado(String codigo, String premio, double valorBilhete, int metaBilhetes) {
+		validarTexto(codigo);
+		validarTexto(premio);
 		validarValorBilhete(valorBilhete);
 	    validarMeta(metaBilhetes);
+	    
 		this.codigo = codigo;
 		this.premio = premio;
 		this.valorBilhete = valorBilhete;
@@ -53,34 +58,26 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	    }
 	}
 	
-	
+	private void validarTexto(String texto) {
+		if (texto.isBlank()) {
+			throw new DadosInvalidosException(texto);
+		}
+	}
 
 	public String getCodigo() {
 		return codigo;
-	}
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
 	}
 
 	public String getPremio() {
 		return premio;
 	}
-	public void setPremio(String premio) {
-		this.premio = premio;
-	}
 
 	public double getValorBilhete() {
 		return valorBilhete;
 	}
-	public void setValorBilhete(double valorBilhete) {
-		this.valorBilhete = valorBilhete;
-	}
 
 	public int getMetaBilhetes() {
 		return metaBilhetes;
-	}
-	public void setMetaBilhetes(int metaBilhetes) {
-		this.metaBilhetes = metaBilhetes;
 	}
 
 	public double getArrecadacaoAtual() {
@@ -103,14 +100,15 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 
 	@Override
 	public String gerarRelatorio() {
-		String relatorio = "\n============================== RELATÓRIO GERAL ==============================" + 
+		
+		String relatorio = String.format("\n============================== RELATÓRIO GERAL ==============================" + 
 							"\nPROGRESSO: ==================================================================" + 
-							"\nMeta de arrecadação: R$ %.2f%n" + calcularMetaArrecadacao()  + 
-							"\nValor Arrecadado:    R$ %.2f%n" + arrecadacaoAtual +
+							"\nMeta de arrecadação: R$ %.2f%n" +
+							"\nValor Arrecadado:    R$ %.2f%n" +
 							"\nBilhetes vendidos: " + contarBilhetes() +
-							"\nProgresso: %.1f%%%n" + calcularProgressoEmPorcentagem() + 
-							"\nRestante para meta: %.1f%%%n" + calcularRestanteEmPorcentagem() + 
-							"\n===========================================================================";
+							"\nProgresso: %.1f%%%n"  + 
+							"\nRestante para meta: %.1f%%%n" + 
+							"\n===========================================================================", calcularMetaArrecadacao(), arrecadacaoAtual, calcularProgressoEmPorcentagem(), calcularRestanteEmPorcentagem());
 		return relatorio;
 	}
 	
@@ -135,6 +133,15 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 		if (sorteado) {
 			throw new SorteioInvalidoException("A rifa já foi sorteada.");
 		}
+		
+		if (vendedor == null) {
+			throw new PessoaNaoEncontradaException("Vendedor não encontrado.");
+		}
+		
+		if (comprador == null) {
+			throw new PessoaNaoEncontradaException("Comprador não encontrado.");
+		}
+		
 		validarNumero(numero);
 		
 		Bilhete bilhete = new Bilhete(numero, vendedor, comprador, pagamento);
