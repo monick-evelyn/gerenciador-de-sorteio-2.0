@@ -13,8 +13,11 @@ import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
 import model.Bilhete;
 import model.Comprador;
+import model.PixPremiado;
+import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
+import model.interfaces.Sorteavel;
 
 public class ConsoleSorteio {
 
@@ -48,7 +51,11 @@ public class ConsoleSorteio {
 	private void executarOpcao(int opcao) {
 		switch (opcao) {
 		case 1:
-			cadastrarSorteio();
+			try {
+				cadastrarSorteio();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 
 		case 2:
@@ -165,10 +172,10 @@ public class ConsoleSorteio {
 
 	private void exibirFunilDeCompradores() {
 		try {
-			String compradores=controlador.exibirTodosOsCompradores();
+			String compradores = controlador.exibirTodosOsCompradores();
 			System.out.println(compradores);
-		}catch(CompradorNaoEncontradoException e) {
-			System.out.println("Erro: "+e.getMessage());
+		} catch (CompradorNaoEncontradoException e) {
+			System.out.println("Erro: " + e.getMessage());
 		}
 
 	}
@@ -176,7 +183,7 @@ public class ConsoleSorteio {
 	private void listarVendasPorVendedor() {
 		try {
 			String cpf = lerTexto("CPF: ");
-			String vendas=controlador.listarVendasPorVendedor(cpf);
+			String vendas = controlador.listarVendasPorVendedor(cpf);
 			System.out.println(vendas);
 		} catch (VendedorNaoEncontradoException | BilheteNaoEncontradoException | VendedorInvalidoException e) {
 			System.out.println("Erro: " + e.getMessage());
@@ -258,8 +265,11 @@ public class ConsoleSorteio {
 		try {
 			String codigoSorteio = lerTexto("Código sorteio: ");
 			double novaMeta = lerDouble("Nova meta: ");
-			controlador.atualizarMetaRifa(codigoSorteio, novaMeta);
-			System.out.println("Meta atualizada com sucesso!");
+
+			if (controlador.atualizarMetaRifa(codigoSorteio, novaMeta)) {
+				System.out.println("Meta atualizada com sucesso!");
+			}
+
 		} catch (BilheteInvalidoException | LimiteInvalidoException e) {
 			System.out.println("Erro ao atualizar meta: " + e.getMessage());
 		}
@@ -270,8 +280,11 @@ public class ConsoleSorteio {
 		try {
 			String codigoSorteio = lerTexto("Código sorteio: ");
 			int novaMeta = lerInteiro("Nova meta: ");
-			controlador.atualizarMetaPix(codigoSorteio, novaMeta);
-			System.out.println("Meta atualizada com sucesso!");
+
+			if (controlador.atualizarMetaPix(codigoSorteio, novaMeta)) {
+
+				System.out.println("Meta atualizada com sucesso!");
+			}
 		} catch (BilheteInvalidoException | LimiteInvalidoException e) {
 			System.out.println("Erro ao atualizar meta: " + e.getMessage());
 		}
@@ -283,8 +296,10 @@ public class ConsoleSorteio {
 			String codigoSorteio = lerTexto("Código sorteio: ");
 			int numeroBilhete = lerInteiro("Número do bilhete: ");
 
-			controlador.removerVenda(codigoSorteio, numeroBilhete);
-			System.out.println("Venda removida com sucesso!");
+			if (controlador.removerVenda(codigoSorteio, numeroBilhete)) {
+				System.out.println("Venda removida com sucesso!");
+			}
+
 		} catch (BilheteNaoEncontradoException e) {
 			System.out.println("Erro ao remover bilhete: " + e.getMessage());
 		}
@@ -294,8 +309,12 @@ public class ConsoleSorteio {
 	private void venderBilhete() {
 
 		try {
+			String codigoSorteio = lerTexto("Código sorteio: ");
+			int numeroBilhete = lerInteiro("Número do bilhete: ");
+			String codigoVendedor = lerTexto("Código vendedor: ");
+			String codigoComprador = lerTexto("Código comprador: ");
+			
 			FormaDePagamento formaPagamento = null;
-
 			menuExibirFormaDePagamento();
 			int opcao = lerInteiro("Opcao: ");
 
@@ -315,11 +334,10 @@ public class ConsoleSorteio {
 				System.out.println("Opcao invalida.");
 			}
 
-			String codigoSorteio = lerTexto("Código sorteio: ");
-			int numeroBilhete = lerInteiro("Número do bilhete: ");
-			String codigoVendedor = lerTexto("Código vendedor: ");
-			String codigoComprador = lerTexto("Código comprador: ");
-			controlador.venderBilhete(codigoSorteio, numeroBilhete, codigoVendedor, codigoComprador, formaPagamento);
+			if (controlador.venderBilhete(codigoSorteio, numeroBilhete, codigoVendedor, codigoComprador,
+					formaPagamento)) {
+				System.out.println("Bilhete vendido!");
+			}
 
 		} catch (BilheteInvalidoException e) {
 			System.out.println("Erro ao vender bilhete: " + e.getMessage());
@@ -331,7 +349,9 @@ public class ConsoleSorteio {
 		try {
 			String cpf = lerTexto("CPF: ");
 			Vendedor vendedor = controlador.buscarVendedorPorCPF(cpf);
-			System.out.println(vendedor);
+			if (vendedor != null) {
+				System.out.println(vendedor.toString());
+			}
 		} catch (CompradorNaoEncontradoException e) {
 			System.out.println("Erro ao buscar vendedor: " + e.getMessage());
 		}
@@ -342,7 +362,9 @@ public class ConsoleSorteio {
 		try {
 			String cpf = lerTexto("CPF: ");
 			Comprador comprador = controlador.buscarCompradorPorCPF(cpf);
-			System.out.println(comprador);
+			if (comprador != null) {
+				System.out.println(comprador.toString());
+			}
 		} catch (CompradorNaoEncontradoException e) {
 			System.out.println("Erro ao buscar comprador: " + e.getMessage());
 		}
@@ -354,7 +376,11 @@ public class ConsoleSorteio {
 			String codigoSorteio = lerTexto("Codigo do sorteio: ");
 			int numeroBilhete = lerInteiro("Numero do bilhete: ");
 			Bilhete bilhete = controlador.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
-			System.out.println(bilhete);
+
+			if (bilhete != null) {
+				System.out.println(bilhete.toString());
+			}
+
 		} catch (BilheteNaoEncontradoException e) {
 			System.out.println("Erro ao buscar bilhete: " + e.getMessage());
 		}
@@ -363,7 +389,8 @@ public class ConsoleSorteio {
 	private void buscarSorteioPorCodigo() {
 		try {
 			String codigoSorteio = lerTexto("Codigo do sorteio: ");
-			controlador.buscarSorteioPorCodigo(codigoSorteio);
+			System.out.println(controlador.consultarSorteioPorCodigo(codigoSorteio));
+			
 		} catch (SorteioNaoEncontradoException e) {
 			System.out.println("Erro ao buscar sorteio: " + e.getMessage());
 		}
@@ -374,7 +401,10 @@ public class ConsoleSorteio {
 			String cpf = lerTexto("CPF: ");
 			String nome = lerTexto("Nome: ");
 			String telefone = lerTexto("telefone: ");
-			controlador.cadastrarComprador(cpf, nome, telefone);
+
+			if (controlador.cadastrarComprador(cpf, nome, telefone)) {
+				System.out.println("Comprador cadastrado com sucesso!");
+			}
 		} catch (VendedorInvalidoException e) {
 			System.out.println("Erro ao cadastrar vendedor: " + e.getMessage());
 		}
@@ -386,7 +416,10 @@ public class ConsoleSorteio {
 			String cpf = lerTexto("CPF: ");
 			String nome = lerTexto("Nome: ");
 			String telefone = lerTexto("telefone: ");
-			controlador.cadastrarVendedor(cpf, nome, telefone);
+
+			if (controlador.cadastrarVendedor(cpf, nome, telefone)) {
+				System.out.println("Vendedor cadastrado com sucesso!");
+			}
 		} catch (VendedorInvalidoException e) {
 			System.out.println("Erro ao cadastrar vendedor: " + e.getMessage());
 		}
@@ -407,7 +440,10 @@ public class ConsoleSorteio {
 				double valorBilhete = lerDouble("Valor do bilhete: ");
 				double meta = lerDouble("Valor para arrecadar: ");
 
-				controlador.cadastrarRifa(codigo, premio, valorBilhete, meta);
+				if (controlador.cadastrarRifa(codigo, premio, valorBilhete, meta)) {
+					System.out.println("Rifa cadastrada com sucesso!");
+				}
+				
 				break;
 
 			case 2:
@@ -416,8 +452,10 @@ public class ConsoleSorteio {
 				premio = lerTexto("Premio: ");
 				valorBilhete = lerDouble("Valor do bilhete: ");
 				int limiteBilhetes = lerInteiro("Limite de bilhetes: ");
-
-				controlador.cadastrarPixPremiado(codigo, premio, valorBilhete, limiteBilhetes);
+				
+				if (controlador.cadastrarPixPremiado(codigo, premio, valorBilhete, limiteBilhetes)) {
+					System.out.println("Pix premiado cadastrada com sucesso!");
+				}
 				break;
 
 			case 0:
@@ -510,7 +548,7 @@ public class ConsoleSorteio {
 				return Double.parseDouble(entrada);
 
 			} catch (NumberFormatException e) {
-				System.out.println("Digite um numero inteiro valido.");
+				System.out.println("Digite um numero decimal valido.");
 			}
 		}
 	}

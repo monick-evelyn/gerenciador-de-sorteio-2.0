@@ -11,9 +11,12 @@ public abstract class Pessoa {
 	
 	
 	public Pessoa(String cpf, String nome, String telefone) {
-		this.cpf = validarCPF(cpf);
-		this.nome = validarTexto(nome);
-		this.telefone = validarTelefone(telefone);
+		validarCPF(cpf);
+		validarTexto(nome);
+		validarTelefone(telefone);
+		this.cpf = cpf;
+		this.nome = nome;
+		this.telefone = telefone;
 	}
 	
 	protected String validarCPF(String cpf) {

@@ -2,7 +2,11 @@ package test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeNoException;
+
+import java.lang.invoke.LambdaConversionException;
 
 import org.junit.Rule;
 
@@ -57,18 +61,14 @@ public class ControladorTest {
 		controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 100);
 	}
 	
-	@Test
+	@Test(expected = DadosInvalidosException.class)
 	public void naoDeveCadastrarRifaComMetaInvalida() {
 		controlador.cadastrarRifa("R001", "Moto 0km", 10.0, -100.0);
-		
-		assertEquals(0, controlador.contarSorteios());
 	}
-	
-	@Test
+
+	@Test(expected = DadosInvalidosException.class)
 	public void naoDeveCadastrarPixPremiadoComLimiteInvalido() {
-		assertFalse(controlador.cadastrarPixPremiado("P001", "R$100 no Pix", 5.0, 0));
-		
-		assertEquals(0, controlador.contarSorteios());
+		controlador.cadastrarPixPremiado("P001", "R$100 no Pix", 5.0, 0);
 	}
 	
 	// ============================================================
@@ -225,14 +225,19 @@ public class ControladorTest {
 		assertTrue(controlador.venderBilhete("P001", 1, "11122233344", "55566677788", FormaDePagamento.CARTAO));
 	}
 	
-	@Test(expected = BilheteInvalidoException.class)
+	@Test
 	public void naoDeveVenderBilheteComNumeroJaVendido() {
-		assertTrue(controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0));
-		assertTrue(controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000"));
-		assertTrue(controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000"));
+		controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0);
+	    controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
+	    controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
 
-		controlador.venderBilhete("R001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
-		controlador.venderBilhete("R001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
+	    // Primeira venda funciona normalmente (o bilhete passa a constar como vendido)
+	    controlador.venderBilhete("R001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
+	    
+	    // A segunda tentativa no mesmo número (1) deve disparar a exceção esperada
+	    assertThrows(BilheteInvalidoException.class, () -> {
+	        controlador.venderBilhete("R001", 1, "11122233344", "55566677788", FormaDePagamento.PIX);
+	    });
 	}
 	
 	// ============================================================
@@ -289,7 +294,7 @@ public class ControladorTest {
 		controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
 		controlador.cadastrarComprador("55566677788", "Ana Lima", "83988880000");
 
-		for (int i = 0; i < 15; i++) {
+		for (int i = 1; i <= 15; i++) {
 			controlador.venderBilhete("R001", i, "11122233344", "55566677788", FormaDePagamento.PIX);
 		}
 

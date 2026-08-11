@@ -52,6 +52,10 @@ public class ControladorSorteio {
 		return sistema.buscarSorteioPorCodigo(codigo);
 	}
 
+	public String consultarSorteioPorCodigo(String codigo) {
+		return sistema.consultarSorteioPorCodgigo(codigo);
+	}
+	
 	public int contarSorteios() {
 		return sistema.contarSorteios();
 	}
