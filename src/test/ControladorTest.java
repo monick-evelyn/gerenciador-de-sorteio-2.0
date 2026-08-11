@@ -2,36 +2,20 @@ package test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeNoException;
-
-import java.lang.invoke.LambdaConversionException;
-
-import org.junit.Rule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import controller.ControladorSorteio;
-import exception.BilheteInvalidoException;
-import exception.CompradorInvalidoException;
-import exception.CompradorNaoEncontradoException;
-import exception.DadosInvalidosException;
-import exception.SorteioInvalidoException;
-import exception.SorteioNaoEncontradoException;
-import exception.VendedorInvalidoException;
-import exception.VendedorNaoEncontradoException;
+
 import model.Comprador;
 import model.PixPremiado;
 import model.Rifa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
-import model.enums.NivelVendedor;
 import model.interfaces.Sorteavel;
 
 public class ControladorTest {
@@ -41,7 +25,7 @@ public class ControladorTest {
 	// ============================================================
 	// ============================================================
 	
-	
+	@Test
 	public void deveIniciarSorteiosCadastrados() {
 		
 		String esperado = "Nenhum sorteio encontrado.";
@@ -131,6 +115,7 @@ public class ControladorTest {
 		assertEquals(0, controlador.contarVendedores());
 	}
 	
+	@Test
 	public void naoDeveCadastrarPessoaTelefoneInvalido() {
 		assertFalse(controlador.cadastrarVendedor("55566677788", "Maria", "-1"));
 		assertFalse(controlador.cadastrarVendedor("55566677788", "Maria", "6435"));

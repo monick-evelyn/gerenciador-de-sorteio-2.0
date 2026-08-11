@@ -67,29 +67,17 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	public String getCodigo() {
 		return codigo;
 	}
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
-	}
 
 	public String getPremio() {
 		return premio;
-	}
-	public void setPremio(String premio) {
-		this.premio = premio;
 	}
 
 	public double getValorBilhete() {
 		return valorBilhete;
 	}
-	public void setValorBilhete(double valorBilhete) {
-		this.valorBilhete = valorBilhete;
-	}
 
 	public int getMetaBilhetes() {
 		return metaBilhetes;
-	}
-	public void setMetaBilhetes(int metaBilhetes) {
-		this.metaBilhetes = metaBilhetes;
 	}
 
 	public double getArrecadacaoAtual() {

@@ -16,13 +16,11 @@ import model.interfaces.Sorteavel;
 
 import exception.BilheteInvalidoException;
 import exception.BilheteNaoEncontradoException;
-import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.LimiteInvalidoException;
 
 import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
-import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
 
 public class SistemaSorteio {

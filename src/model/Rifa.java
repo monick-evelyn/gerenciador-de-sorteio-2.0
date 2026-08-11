@@ -63,24 +63,12 @@ public class Rifa implements Sorteavel, Relatoravel {
 		return premio;
 	}
 
-	public void setPremio(String premio) {
-		this.premio = premio;
-	}
-
 	public double getValorBilhete() {
 		return valorBilhete;
 	}
 
-	public void setValorBilhete(double valorBilhete) {
-		this.valorBilhete = valorBilhete;
-	}
-
 	public double getMeta() {
 		return meta;
-	}
-
-	public void setMeta(double meta) {
-		this.meta = meta;
 	}
 
 	public double getArrecadacaoAtual() {
