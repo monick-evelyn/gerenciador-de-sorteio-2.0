@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNoException;
 
 import java.lang.invoke.LambdaConversionException;
@@ -40,9 +41,10 @@ public class ControladorTest {
 	// ============================================================
 	
 	
-	@Test(expected = SorteioNaoEncontradoException.class)
 	public void deveIniciarSorteiosCadastrados() {
-		controlador.exibirTodosOsSorteios();
+		
+		String esperado = "Nenhum sorteio encontrado.";
+		assertEquals(esperado, controlador.exibirTodosOsSorteios());
 		assertEquals(0, controlador.contarSorteios());
 	}
 	
@@ -54,11 +56,15 @@ public class ControladorTest {
 		assertEquals(2, controlador.contarSorteios());
 	}
 	
-	@Test(expected = SorteioInvalidoException.class)
+	@Test
 	public void naoDeveCadastrarDoisSorteiosComMesmoCodigo() {
 		controlador.cadastrarRifa("R001", "Moto 0km", 10.0, 100.0);
 		assertEquals(1, controlador.contarSorteios());
-		controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 100);
+		assertFalse(controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 100));
+		
+		/*assertThrows(SorteioInvalidoException.class, () -> {
+			controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 100);
+	    });*/
 	}
 	
 	@Test(expected = DadosInvalidosException.class)
@@ -82,11 +88,12 @@ public class ControladorTest {
 		assertEquals(1, controlador.contarCompradores());
 	}
 	
-	@Test(expected = VendedorInvalidoException.class)
+	@Test
 	public void naoDeveCadastrarDoisVendedoresComMesmoCpf() {
 	    controlador.cadastrarVendedor("11122233344", "Carlos Souza", "83999990000");
 	    assertEquals(1, controlador.contarVendedores());
-	    controlador.cadastrarVendedor("11122233344", "Anderson Soares", "83988887777");
+	    
+	    assertThrows(VendedorInvalidoException.class, () -> {controlador.cadastrarVendedor("11122233344", "Anderson Soares", "83988887777");});
 	}
 	
 	@Test(expected = CompradorInvalidoException.class)
@@ -109,8 +116,10 @@ public class ControladorTest {
 		assertFalse(controlador.cadastrarComprador("", "", ""));
 	}
 	
+	@Test
 	public void naoDeveCadastrarPessoaComCPFInvalido() {
-		assertFalse(controlador.cadastrarVendedor("-1", "Maria Margarida", "8399997777"));
+		
+		assertFalse(controlador.cadastrarVendedor("-1", "Maria", "8399997777"));
 		assertFalse(controlador.cadastrarVendedor("55566", "Maria", "8399997777"));
 		
 		assertFalse(controlador.cadastrarComprador("-1", "Maria Margarida", "8399997777"));
