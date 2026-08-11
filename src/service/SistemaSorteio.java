@@ -463,11 +463,11 @@ public class SistemaSorteio {
 		}
 		String resultado = "";
 
-		resultado = "====================" + titulo + "====================";
+		resultado = "====================" + titulo + "====================\n";
 		for (int i = 0; i < ranking.size(); i++) {
 			Vendedor v = ranking.get(i);
 			resultado += ((i + 1) + "º Lugar: " + v.getNome() + " (CPF: " + v.getCpf() + ")" + " - Total Vendido: "
-					+ v.getQuantidadeVendas() + " bilhetes");
+					+ v.getQuantidadeVendas() + " bilhetes\n");
 		}
 		resultado += "===============================================================";
 
@@ -532,7 +532,6 @@ public class SistemaSorteio {
 		String resultado = "";
 		resultado += "==================== HISTÓRICO DO COMPRADOR ====================\n";
 		resultado += "Comprador: " + compradorAux.getNome() + " (CPF: " + compradorAux.getCpf() + ")\n";
-		resultado += "===============================================================";
 
 		int bilhetesComprados = 0;
 
