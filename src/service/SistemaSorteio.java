@@ -69,8 +69,6 @@ public class SistemaSorteio {
 	public boolean cadastrarVendedor(String cpf, String nome, String telefone) {
 
 		if (buscarVendedorPorCPF(cpf) != null) {
-			//System.out.println("Ja existe um vendedor com esse cpf cadastrado.");
-			 //throw new VendedorInvalidoException("Ja existe um vendedor com esse cpf cadastrado.");
 			return false;
 		}
 
@@ -79,7 +77,6 @@ public class SistemaSorteio {
 			vendedores.add(novoVendedor);
 			return true;
 		} catch (Exception e) {
-			//System.out.println("Erro: " + e.getMessage());
 			return false;
 		}
 	}
@@ -87,8 +84,7 @@ public class SistemaSorteio {
 	public boolean cadastrarComprador(String cpf, String nome, String telefone) {
 
 		if (buscarCompradorPorCPF(cpf) != null) {
-			//System.out.println("Ja existe um comprador cadastrado.");
-			//throw new CompradorInvalidoException("Ja existe um comprador cadastrado.");
+
 			return false;
 		}
 
@@ -97,7 +93,6 @@ public class SistemaSorteio {
 			compradores.add(novoComprador);
 			return true;
 		} catch (Exception e) {
-			//System.out.println("Erro: " + e.getMessage());
 			return false;
 		}
 	}
@@ -124,8 +119,8 @@ public class SistemaSorteio {
 	}
 
 	public Vendedor buscarVendedorPorCPF(String cpf) {
-		
-		if(vendedores!=null && cpf!=null) {
+
+		if (vendedores != null && cpf != null) {
 			for (Vendedor vendedor : vendedores) {
 				if (vendedor.getCpf().equalsIgnoreCase(cpf)) {
 					return vendedor;
@@ -137,7 +132,7 @@ public class SistemaSorteio {
 
 	public Comprador buscarCompradorPorCPF(String cpf) {
 
-		if(compradores!=null && cpf!=null) {
+		if (compradores != null && cpf != null) {
 			for (Comprador comprador : compradores) {
 
 				if (comprador.getCpf().equalsIgnoreCase(cpf)) {
@@ -147,7 +142,6 @@ public class SistemaSorteio {
 		}
 		return null;
 
-		
 	}
 
 	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
@@ -177,10 +171,10 @@ public class SistemaSorteio {
 
 		return null;
 	}
-	
+
 	public String consultarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
 		Bilhete bilhete = buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
-		
+
 		if (bilhete != null) {
 			return bilhete.toString();
 		}

@@ -47,8 +47,8 @@ public class ControladorSorteio {
 	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
 		return sistema.buscarBilhetePorCodigo(codigoSorteio, numeroBilhete);
 	}
-	
-	public String consularBilhetePorCodigo(String codigoSorteio, int numeroBilhete){
+
+	public String consularBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
 		return sistema.consultarBilhetePorCodigo(codigoSorteio, numeroBilhete);
 	}
 
@@ -59,7 +59,7 @@ public class ControladorSorteio {
 	public String consultarSorteioPorCodigo(String codigo) {
 		return sistema.consultarSorteioPorCodgigo(codigo);
 	}
-	
+
 	public int contarSorteios() {
 		return sistema.contarSorteios();
 	}
@@ -100,7 +100,7 @@ public class ControladorSorteio {
 	public boolean atualizarNivelDoVendedor(String cpf) {
 		return sistema.atualizarNivelDoVendedor(cpf);
 	}
-	
+
 	public boolean transformarRifaemPix(String codigo, int metaBilhetes) {
 		return sistema.transformarRifaemPix(codigo, metaBilhetes);
 	}
@@ -108,23 +108,23 @@ public class ControladorSorteio {
 	public String exibirRelatorioGeralDoSorteio(String codigo) {
 		return sistema.exibirRelatorioGeralDoSorteio(codigo);
 	}
-	
+
 	public String gerarRankingVendedores() {
 		return sistema.gerarRankingVendedores();
 	}
-	
+
 	public String gerarRankingVendedoresPorSorteio(String codigoSorteio) {
 		return sistema.gerarRankingVendedoresPorSorteio(codigoSorteio);
 	}
-	
+
 	public String listarVendasPorVendedor(String cpf) {
 		return sistema.listarVendasPorVendedor(cpf);
 	}
-	
+
 	public String exibirTodosOsCompradores() {
 		return sistema.exibirTodosOsCompradores();
 	}
-	
+
 	public String exibirHistoricoPorComprador(String cpf) {
 		return sistema.exibirHistoricoPorComprador(cpf);
 	}

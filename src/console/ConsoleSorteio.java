@@ -195,7 +195,7 @@ public class ConsoleSorteio {
 			String codigoSorteio = lerTexto("Código sorteio: ");
 			String ranking = controlador.gerarRankingVendedoresPorSorteio(codigoSorteio);
 			System.out.println(ranking);
-		} catch (VendedorNaoEncontradoException e) {
+		} catch (VendedorNaoEncontradoException | BilheteNaoEncontradoException | SorteioNaoEncontradoException e) {
 			System.out.println("Erro: " + e.getMessage());
 
 		}
@@ -206,7 +206,7 @@ public class ConsoleSorteio {
 		try {
 			String ranking = controlador.gerarRankingVendedores();
 			System.out.println(ranking);
-		} catch (VendedorNaoEncontradoException e) {
+		} catch (VendedorNaoEncontradoException | BilheteNaoEncontradoException e) {
 			System.out.println("Erro: " + e.getMessage());
 
 		}
@@ -364,7 +364,7 @@ public class ConsoleSorteio {
 	}
 
 	private void buscarCompradorPorCPF() {
-		
+
 		try {
 			String cpf = lerTexto("CPF: ");
 			Comprador comprador = controlador.buscarCompradorPorCPF(cpf);
@@ -401,25 +401,14 @@ public class ConsoleSorteio {
 	}
 
 	private void cadastrarComprador() {
-		/*try {
-			String cpf = lerTexto("CPF: ");
-			String nome = lerTexto("Nome: ");
-			String telefone = lerTexto("telefone: ");
-
-			if (controlador.cadastrarComprador(cpf, nome, telefone)) {
-				System.out.println("Comprador cadastrado com sucesso!");
-			}
-		} catch CompradorInvalidoException e) {
-			System.out.println("Erro ao cadastrar comprador: " + e.getMessage());
-		}
-		*/
 		try {
 			String cpf = lerTexto("CPF: ");
 			String nome = lerTexto("Nome: ");
 			String telefone = lerTexto("telefone: ");
 
 			if (!controlador.cadastrarComprador(cpf, nome, telefone)) {
-				throw new CompradorInvalidoException("esse CPF já foi cadastrado ou os dados inseridos estão inválidos");
+				throw new CompradorInvalidoException(
+						"esse CPF já foi cadastrado ou os dados inseridos estão inválidos");
 			}
 			System.out.println("Comprador cadastrado com sucesso!");
 		} catch (CompradorInvalidoException e) {
@@ -429,24 +418,11 @@ public class ConsoleSorteio {
 	}
 
 	private void cadastrarVendedor() {
-		/*try {
-			String cpf = lerTexto("CPF: ");
-			String nome = lerTexto("Nome: ");
-			String telefone = lerTexto("telefone: ");
-
-			if (controlador.cadastrarVendedor(cpf, nome, telefone)) {
-				System.out.println("Vendedor cadastrado com sucesso!");
-			}
-		} catch (VendedorInvalidoException e) {
-			System.out.println("Erro ao cadastrar vendedor: " + e.getMessage());
-		}*/
-		
 		try {
 			String cpf = lerTexto("CPF: ");
 			String nome = lerTexto("Nome: ");
 			String telefone = lerTexto("telefone: ");
-			
-			
+
 			if (!controlador.cadastrarVendedor(cpf, nome, telefone)) {
 				throw new VendedorInvalidoException("esse CPF já foi cadastrado ou os dados inseridos estão inválidos");
 			}
@@ -455,7 +431,6 @@ public class ConsoleSorteio {
 		} catch (VendedorInvalidoException e) {
 			System.out.println("Erro ao cadastrar vendedor: " + e.getMessage());
 		}
-		
 
 	}
 
