@@ -492,7 +492,7 @@ public class SistemaSorteio {
 			if (bilhetes != null) {
 				for (Bilhete bilhete : bilhetes.values()) {
 					if (bilhete.getVendedor() != null && bilhete.getVendedor().getCpf().equalsIgnoreCase(cpf)) {
-						resultado += bilhete.toString() + "\n";
+						resultado += "\n" + bilhete.toString() + "\n";
 						bilhetesEncontrados++;
 					}
 				}
