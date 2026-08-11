@@ -112,14 +112,15 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 
 	@Override
 	public String gerarRelatorio() {
-		String relatorio = "\n============================== RELATÓRIO GERAL ==============================" + 
+		
+		String relatorio = String.format("\n============================== RELATÓRIO GERAL ==============================" + 
 							"\nPROGRESSO: ==================================================================" + 
-							"\nMeta de arrecadação: R$ %.2f%n" + calcularMetaArrecadacao()  + 
-							"\nValor Arrecadado:    R$ %.2f%n" + arrecadacaoAtual +
+							"\nMeta de arrecadação: R$ %.2f%n" +
+							"\nValor Arrecadado:    R$ %.2f%n" +
 							"\nBilhetes vendidos: " + contarBilhetes() +
-							"\nProgresso: %.1f%%%n" + calcularProgressoEmPorcentagem() + 
-							"\nRestante para meta: %.1f%%%n" + calcularRestanteEmPorcentagem() + 
-							"\n===========================================================================";
+							"\nProgresso: %.1f%%%n"  + 
+							"\nRestante para meta: %.1f%%%n" + 
+							"\n===========================================================================", calcularMetaArrecadacao(), arrecadacaoAtual, calcularProgressoEmPorcentagem(), calcularRestanteEmPorcentagem());
 		return relatorio;
 	}
 	

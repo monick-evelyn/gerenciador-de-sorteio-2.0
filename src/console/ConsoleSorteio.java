@@ -238,6 +238,7 @@ public class ConsoleSorteio {
 			String codigoSorteio = lerTexto("Código sorteio: ");
 			String relatorio = controlador.exibirRelatorioGeralDoSorteio(codigoSorteio);
 			System.out.println(relatorio);
+			
 		} catch (SorteioNaoEncontradoException | SorteioInvalidoException e) {
 			System.out.println("Erro :" + e.getMessage());
 
