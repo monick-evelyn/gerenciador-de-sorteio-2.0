@@ -7,6 +7,7 @@ import java.util.Random;
 import exception.BilheteInvalidoException;
 import exception.DadosInvalidosException;
 import exception.LimiteInvalidoException;
+import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
 import model.interfaces.Relatoravel;
@@ -143,6 +144,15 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 		if (sorteado) {
 			throw new SorteioInvalidoException("A rifa já foi sorteada.");
 		}
+		
+		if (vendedor == null) {
+			throw new PessoaNaoEncontradaException("Vendedor não encontrado.");
+		}
+		
+		if (comprador == null) {
+			throw new PessoaNaoEncontradaException("Comprador não encontrado.");
+		}
+		
 		validarNumero(numero);
 		
 		Bilhete bilhete = new Bilhete(numero, vendedor, comprador, pagamento);

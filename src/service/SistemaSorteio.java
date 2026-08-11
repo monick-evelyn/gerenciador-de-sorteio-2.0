@@ -117,6 +117,7 @@ public class SistemaSorteio {
 			return false;
 
 		}
+
 	}
 
 	public Vendedor buscarVendedorPorCPF(String cpf) {
@@ -144,22 +145,22 @@ public class SistemaSorteio {
 		return null;
 
 	}
-	
+
 	public Pessoa buscarPessoaPorCPF(String cpf) {
-		if(cpf==null || cpf.isEmpty()) {
+		if (cpf == null || cpf.isEmpty()) {
 			return null;
 		}
-		if(vendedores!=null) {
-			for(Vendedor vendedor : vendedores) {
-				if(vendedor.getCpf().equalsIgnoreCase(cpf)) {
+		if (vendedores != null) {
+			for (Vendedor vendedor : vendedores) {
+				if (vendedor.getCpf().equalsIgnoreCase(cpf)) {
 					return vendedor;
 				}
 			}
 		}
-		
-		if(compradores!=null) {
-			for(Comprador comprador:compradores) {
-				if(comprador.getCpf().equalsIgnoreCase(cpf)) {
+
+		if (compradores != null) {
+			for (Comprador comprador : compradores) {
+				if (comprador.getCpf().equalsIgnoreCase(cpf)) {
 					return comprador;
 				}
 			}
@@ -457,7 +458,7 @@ public class SistemaSorteio {
 					Vendedor aux = ranking.get(j);
 
 					ranking.set(j, ranking.get(j + 1));
-					ranking.set(j+1, aux);
+					ranking.set(j + 1, aux);
 				}
 			}
 		}
