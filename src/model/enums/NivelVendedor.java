@@ -8,9 +8,10 @@ public enum NivelVendedor {
 
 	    private final int vendasMinimas;
 
-	    NivelVendedor(int vendasMinimas) {
+	    private NivelVendedor(int vendasMinimas) {
 	        this.vendasMinimas = vendasMinimas;
 	    }
+	    
 
 	    public int getVendasMinimas() {
 	        return vendasMinimas;
@@ -26,3 +27,4 @@ public enum NivelVendedor {
 	        return nivelCalculado;
 	    }
 }
+

@@ -47,9 +47,6 @@ public class ControladorTest {
 		assertEquals(1, controlador.contarSorteios());
 		assertFalse(controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 100));
 		
-		/*assertThrows(SorteioInvalidoException.class, () -> {
-			controlador.cadastrarPixPremiado("R001", "R$100 no Pix", 5.0, 100);
-	    });*/
 	}
 	
 	@Test
@@ -79,7 +76,6 @@ public class ControladorTest {
 	    assertFalse(controlador.cadastrarVendedor("11122233344", "Anderson Soares", "83988887777"));
 	    assertEquals(1, controlador.contarVendedores());
 	    
-	    //assertThrows(VendedorInvalidoException.class, () -> {controlador.cadastrarVendedor("11122233344", "Anderson Soares", "83988887777");});
 	}
 	
 	@Test

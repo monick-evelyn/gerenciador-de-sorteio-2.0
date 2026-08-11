@@ -5,3 +5,4 @@ public class BilheteNaoEncontradoException extends RuntimeException {
 		super(mensagem);
 	}
 }
+
