@@ -5,6 +5,7 @@ import java.util.Scanner;
 import controller.ControladorSorteio;
 import exception.BilheteInvalidoException;
 import exception.BilheteNaoEncontradoException;
+import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.LimiteInvalidoException;
 import exception.SorteioInvalidoException;
@@ -308,7 +309,7 @@ public class ConsoleSorteio {
 		int numeroBilhete = lerInteiro("Número do bilhete: ");
 		String codigoVendedor = lerTexto("Código vendedor: ");
 		String codigoComprador = lerTexto("Código comprador: ");
-		
+
 		FormaDePagamento formaPagamento = null;
 		menuExibirFormaDePagamento();
 		int opcao = lerInteiro("Opcao: ");
@@ -328,16 +329,16 @@ public class ConsoleSorteio {
 		default:
 			System.out.println("Opcao invalida.");
 		}
-		
+
 		try {
 			if (controlador.venderBilhete(codigoSorteio, numeroBilhete, codigoVendedor, codigoComprador,
 					formaPagamento)) {
 				System.out.println("Bilhete vendido!");
-				
+
 				if (controlador.atualizarNivelDoVendedor(codigoVendedor)) {
-			        Vendedor vendedor = controlador.buscarVendedorPorCPF(codigoVendedor);
-			        System.out.println("Parabéns! O vendedor subiu para o nível " + vendedor.getNivel() + "!");
-			    }
+					Vendedor vendedor = controlador.buscarVendedorPorCPF(codigoVendedor);
+					System.out.println("Parabéns! O vendedor subiu para o nível " + vendedor.getNivel() + "!");
+				}
 			}
 
 		} catch (Exception e) {
@@ -347,14 +348,15 @@ public class ConsoleSorteio {
 	}
 
 	private void buscarVendedorPorCPF() {
+
 		try {
 			String cpf = lerTexto("CPF: ");
 			Vendedor vendedor = controlador.buscarVendedorPorCPF(cpf);
-			if (vendedor != null) {
-				System.out.println("Vendedor encontrado: \n" + vendedor.toString());
-				return;
+			if (vendedor == null) {
+				throw new VendedorNaoEncontradoException("O CPF (" + cpf + ") nao foi encontrado");
 			}
-		} catch (VendedorInvalidoException e) { //nao imprime a exption message
+			System.out.println("Vendedor encontrado: \n" + vendedor.toString());
+		} catch (VendedorNaoEncontradoException e) {
 			System.out.println("Erro ao buscar vendedor: " + e.getMessage());
 			return;
 		}
@@ -362,12 +364,14 @@ public class ConsoleSorteio {
 	}
 
 	private void buscarCompradorPorCPF() {
+		
 		try {
 			String cpf = lerTexto("CPF: ");
 			Comprador comprador = controlador.buscarCompradorPorCPF(cpf);
-			if (comprador != null) {
-				System.out.println(comprador.toString());
+			if (comprador == null) {
+				throw new CompradorNaoEncontradoException("O CPF (" + cpf + ") nao foi encontrado");
 			}
+			System.out.println("Comprador encontrado: \n" + comprador.toString());
 		} catch (CompradorNaoEncontradoException e) {
 			System.out.println("Erro ao buscar comprador: " + e.getMessage());
 		}
@@ -378,7 +382,7 @@ public class ConsoleSorteio {
 		try {
 			String codigoSorteio = lerTexto("Codigo do sorteio: ");
 			int numeroBilhete = lerInteiro("Numero do bilhete: ");
-			
+
 			System.out.println(controlador.consularBilhetePorCodigo(codigoSorteio, numeroBilhete));
 
 		} catch (BilheteNaoEncontradoException e) {
@@ -390,14 +394,14 @@ public class ConsoleSorteio {
 		try {
 			String codigoSorteio = lerTexto("Codigo do sorteio: ");
 			System.out.println(controlador.consultarSorteioPorCodigo(codigoSorteio));
-			
+
 		} catch (SorteioNaoEncontradoException e) {
 			System.out.println("Erro ao buscar sorteio: " + e.getMessage());
 		}
 	}
 
 	private void cadastrarComprador() {
-		try {
+		/*try {
 			String cpf = lerTexto("CPF: ");
 			String nome = lerTexto("Nome: ");
 			String telefone = lerTexto("telefone: ");
@@ -405,14 +409,27 @@ public class ConsoleSorteio {
 			if (controlador.cadastrarComprador(cpf, nome, telefone)) {
 				System.out.println("Comprador cadastrado com sucesso!");
 			}
-		} catch (VendedorInvalidoException e) {
-			System.out.println("Erro ao cadastrar vendedor: " + e.getMessage());
+		} catch CompradorInvalidoException e) {
+			System.out.println("Erro ao cadastrar comprador: " + e.getMessage());
+		}
+		*/
+		try {
+			String cpf = lerTexto("CPF: ");
+			String nome = lerTexto("Nome: ");
+			String telefone = lerTexto("telefone: ");
+
+			if (!controlador.cadastrarComprador(cpf, nome, telefone)) {
+				throw new CompradorInvalidoException("esse CPF já foi cadastrado ou os dados inseridos estão inválidos");
+			}
+			System.out.println("Comprador cadastrado com sucesso!");
+		} catch (CompradorInvalidoException e) {
+			System.out.println("Erro ao cadastrar comprador: " + e.getMessage());
 		}
 
 	}
 
 	private void cadastrarVendedor() {
-		try {
+		/*try {
 			String cpf = lerTexto("CPF: ");
 			String nome = lerTexto("Nome: ");
 			String telefone = lerTexto("telefone: ");
@@ -422,7 +439,23 @@ public class ConsoleSorteio {
 			}
 		} catch (VendedorInvalidoException e) {
 			System.out.println("Erro ao cadastrar vendedor: " + e.getMessage());
+		}*/
+		
+		try {
+			String cpf = lerTexto("CPF: ");
+			String nome = lerTexto("Nome: ");
+			String telefone = lerTexto("telefone: ");
+			
+			
+			if (!controlador.cadastrarVendedor(cpf, nome, telefone)) {
+				throw new VendedorInvalidoException("esse CPF já foi cadastrado ou os dados inseridos estão inválidos");
+			}
+			System.out.println("Vendedor cadastrado com sucesso!");
+
+		} catch (VendedorInvalidoException e) {
+			System.out.println("Erro ao cadastrar vendedor: " + e.getMessage());
 		}
+		
 
 	}
 
@@ -443,7 +476,7 @@ public class ConsoleSorteio {
 				if (controlador.cadastrarRifa(codigo, premio, valorBilhete, meta)) {
 					System.out.println("Rifa cadastrada com sucesso!");
 				}
-				
+
 				break;
 
 			case 2:
@@ -452,7 +485,7 @@ public class ConsoleSorteio {
 				premio = lerTexto("Premio: ");
 				valorBilhete = lerDouble("Valor do bilhete: ");
 				int limiteBilhetes = lerInteiro("Limite de bilhetes: ");
-				
+
 				if (controlador.cadastrarPixPremiado(codigo, premio, valorBilhete, limiteBilhetes)) {
 					System.out.println("Pix premiado cadastrada com sucesso!");
 				}
@@ -472,22 +505,22 @@ public class ConsoleSorteio {
 
 	private void menuExibirTipoSorteio() {
 		System.out.println("\n╔══════════════════════════════════════════════════╗");
-		System.out.println("║           QUAL TIPO DE SORTEIO?                   ║");
+		System.out.println("║          QUAL TIPO DE SORTEIO?                   ║");
 		System.out.println("╠══════════════════════════════════════════════════╣");
-		System.out.printf("║  %-49s║%n", "1 - Rifa");
-		System.out.printf("║  %-49s║%n", "2 - Pix premiado");
-		System.out.printf("║  %-49s║%n", "0 - Cancelar");
+		System.out.printf("║  %-48s║%n", "1 - Rifa");
+		System.out.printf("║  %-48s║%n", "2 - Pix premiado");
+		System.out.printf("║  %-48s║%n", "0 - Cancelar");
 		System.out.println("╚══════════════════════════════════════════════════╝");
 	}
 
 	private void menuExibirFormaDePagamento() {
 		System.out.println("\n╔══════════════════════════════════════════════════╗");
-		System.out.printf("║ %-50s║%n", "QUAL A FORMA DE PAGAMENTO?");
+		System.out.printf("║ %-49s║%n", "QUAL A FORMA DE PAGAMENTO?");
 		System.out.println("╠══════════════════════════════════════════════════╣");
-		System.out.printf("║  %-49s║%n", "1 - Pix");
-		System.out.printf("║  %-49s║%n", "2 - Dinheiro");
-		System.out.printf("║  %-49s║%n", "3 - Cartão");
-		System.out.printf("║  %-49s║%n", "0 - Cancelar");
+		System.out.printf("║  %-48s║%n", "1 - Pix");
+		System.out.printf("║  %-48s║%n", "2 - Dinheiro");
+		System.out.printf("║  %-48s║%n", "3 - Cartão");
+		System.out.printf("║  %-48s║%n", "0 - Cancelar");
 		System.out.println("╚══════════════════════════════════════════════════╝");
 	}
 

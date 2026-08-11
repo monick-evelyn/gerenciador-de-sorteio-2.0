@@ -15,11 +15,13 @@ import model.interfaces.Sorteavel;
 
 import exception.BilheteInvalidoException;
 import exception.BilheteNaoEncontradoException;
+import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.LimiteInvalidoException;
 
 import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
+import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
 
 public class SistemaSorteio {
@@ -67,9 +69,8 @@ public class SistemaSorteio {
 	public boolean cadastrarVendedor(String cpf, String nome, String telefone) {
 
 		if (buscarVendedorPorCPF(cpf) != null) {
-			System.out.println("Ja existe um vendedor com esse cpf cadastrado.");
-			// throw new VendedorInvalidoException("Ja existe um vendedor com esse cpf
-			// cadastrado.");
+			//System.out.println("Ja existe um vendedor com esse cpf cadastrado.");
+			 //throw new VendedorInvalidoException("Ja existe um vendedor com esse cpf cadastrado.");
 			return false;
 		}
 
@@ -78,7 +79,7 @@ public class SistemaSorteio {
 			vendedores.add(novoVendedor);
 			return true;
 		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
+			//System.out.println("Erro: " + e.getMessage());
 			return false;
 		}
 	}
@@ -86,8 +87,8 @@ public class SistemaSorteio {
 	public boolean cadastrarComprador(String cpf, String nome, String telefone) {
 
 		if (buscarCompradorPorCPF(cpf) != null) {
-			System.out.println("Ja existe um comprador cadastrado.");
-			// throw new CompradorInvalidoException("Ja existe um comprador cadastrado.");
+			//System.out.println("Ja existe um comprador cadastrado.");
+			//throw new CompradorInvalidoException("Ja existe um comprador cadastrado.");
 			return false;
 		}
 
@@ -96,7 +97,7 @@ public class SistemaSorteio {
 			compradores.add(novoComprador);
 			return true;
 		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
+			//System.out.println("Erro: " + e.getMessage());
 			return false;
 		}
 	}
@@ -123,43 +124,30 @@ public class SistemaSorteio {
 	}
 
 	public Vendedor buscarVendedorPorCPF(String cpf) {
-
-		if (contarVendedores() == 0) {
-			return null;
-		}
-
-		try {
+		
+		if(vendedores!=null && cpf!=null) {
 			for (Vendedor vendedor : vendedores) {
 				if (vendedor.getCpf().equalsIgnoreCase(cpf)) {
 					return vendedor;
 				}
 			}
-		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
-			return null;
 		}
-
 		return null;
 	}
 
 	public Comprador buscarCompradorPorCPF(String cpf) {
 
-		if (contarCompradores() == 0) {
-			return null;
-		}
-
-		try {
+		if(compradores!=null && cpf!=null) {
 			for (Comprador comprador : compradores) {
 
 				if (comprador.getCpf().equalsIgnoreCase(cpf)) {
 					return comprador;
 				}
 			}
-		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
-			return null;
 		}
 		return null;
+
+		
 	}
 
 	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
