@@ -275,29 +275,15 @@ public class SistemaSorteio {
 		if (sorteio == null) {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigoSorteio + " nao encontrado.");
 		}
-
-		if (sorteio instanceof Rifa) {
-			Rifa rifa = (Rifa) sorteio;
-			try {
-				if (rifa.prontoParaSorteio()) {
-					return rifa.realizarSorteio();
-				}
-			} catch (Exception e) {
-				System.out.println("Erro: " + e.getMessage());
+		
+		try {
+			if (sorteio.prontoParaSorteio()) {
+				return sorteio.realizarSorteio();
 			}
+		} catch (Exception e) {
+			System.out.println("Erro: " + e.getMessage());
 		}
-
-		if (sorteio instanceof PixPremiado) {
-			PixPremiado pix = (PixPremiado) sorteio;
-			try {
-				if (pix.prontoParaSorteio()) {
-					return pix.realizarSorteio();
-				}
-			} catch (Exception e) {
-				System.out.println("Erro: " + e.getMessage());
-			}
-		}
-
+		
 		return "Não foi possível realizar o sorteio";
 	}
 
