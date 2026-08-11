@@ -3,6 +3,7 @@ package controller;
 
 import model.Bilhete;
 import model.Comprador;
+import model.Pessoa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
 import model.interfaces.Sorteavel;
@@ -129,4 +130,7 @@ public class ControladorSorteio {
 		return sistema.exibirHistoricoPorComprador(cpf);
 	}
 
+	public Pessoa buscarPessoaPorCPF(String cpf) {
+		return sistema.buscarPessoaPorCPF(cpf);
+	}
 }

@@ -1,7 +1,7 @@
 package model;
 
 public class Comprador extends Pessoa {
-	int quantidadeBilhetesComprados;
+	private int quantidadeBilhetesComprados;
 	
 	public Comprador(String cpf, String nome, String telefone) {
 		super(cpf, nome, telefone);

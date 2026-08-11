@@ -8,12 +8,14 @@ import exception.BilheteNaoEncontradoException;
 import exception.CompradorInvalidoException;
 import exception.CompradorNaoEncontradoException;
 import exception.LimiteInvalidoException;
+import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
 import exception.VendedorInvalidoException;
 import exception.VendedorNaoEncontradoException;
 import model.Bilhete;
 import model.Comprador;
+import model.Pessoa;
 import model.Vendedor;
 import model.enums.FormaDePagamento;
 
@@ -135,7 +137,10 @@ public class ConsoleSorteio {
 		case 21:
 			sortearNumero();
 			break;
-
+			
+		case 22:
+			buscarPessoaPorCPF();
+			break;
 		case 0:
 			System.out.println("Programa encerrado.");
 			break;
@@ -144,6 +149,21 @@ public class ConsoleSorteio {
 			System.out.println("Opcao invalida.");
 		}
 
+	}
+
+	private void buscarPessoaPorCPF() {
+		try {
+			String cpf=lerTexto("CPF: ");
+			Pessoa pessoa = controlador.buscarPessoaPorCPF(cpf);
+			
+			if(pessoa==null) {
+				throw new PessoaNaoEncontradaException("Nenhuma pessoa encontrada com o CPF("+cpf+").");
+			}
+			System.out.println(pessoa.toString());
+		}catch(Exception e) {
+			System.out.println("Erro ao buscar pessoa: "+e.getMessage());
+		}
+		
 	}
 
 	private void sortearNumero() {
@@ -524,6 +544,7 @@ public class ConsoleSorteio {
 		System.out.printf("║ %-49s║%n", "19 - Exibir funil de compradores");
 		System.out.printf("║ %-49s║%n", "20 - Exibir histórico por comprador");
 		System.out.printf("║ %-49s║%n", "21 - Sortear número");
+		System.out.printf("║ %-49s║%n", "22 - Buscar pessoa por cpf");
 		System.out.printf("║ %-49s║%n", "0  - Sair");
 		System.out.println("╚══════════════════════════════════════════════════╝");
 	}

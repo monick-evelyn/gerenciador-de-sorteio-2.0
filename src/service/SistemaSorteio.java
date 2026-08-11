@@ -7,6 +7,7 @@ import java.util.Map;
 
 import model.Bilhete;
 import model.Comprador;
+import model.Pessoa;
 import model.PixPremiado;
 import model.Rifa;
 import model.Vendedor;
@@ -142,6 +143,28 @@ public class SistemaSorteio {
 		}
 		return null;
 
+	}
+	
+	public Pessoa buscarPessoaPorCPF(String cpf) {
+		if(cpf==null || cpf.isEmpty()) {
+			return null;
+		}
+		if(vendedores!=null) {
+			for(Vendedor vendedor : vendedores) {
+				if(vendedor.getCpf().equalsIgnoreCase(cpf)) {
+					return vendedor;
+				}
+			}
+		}
+		
+		if(compradores!=null) {
+			for(Comprador comprador:compradores) {
+				if(comprador.getCpf().equalsIgnoreCase(cpf)) {
+					return comprador;
+				}
+			}
+		}
+		return null;
 	}
 
 	public Bilhete buscarBilhetePorCodigo(String codigoSorteio, int numeroBilhete) {
@@ -318,7 +341,7 @@ public class SistemaSorteio {
 		if (item == null) {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
 		}
-		if (!(item instanceof Rifa)) {
+		if (!(item instanceof PixPremiado)) {
 			throw new BilheteInvalidoException("O sorteio de codigo " + codigo + " nao e uma Rifa.");
 		}
 
@@ -434,7 +457,7 @@ public class SistemaSorteio {
 					Vendedor aux = ranking.get(j);
 
 					ranking.set(j, ranking.get(j + 1));
-					ranking.set(j, aux);
+					ranking.set(j+1, aux);
 				}
 			}
 		}
