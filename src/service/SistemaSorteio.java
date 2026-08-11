@@ -70,7 +70,8 @@ public class SistemaSorteio {
 
 		if (buscarVendedorPorCPF(cpf) != null) {
 			System.out.println("Ja existe um vendedor com esse cpf cadastrado.");
-			//throw new VendedorInvalidoException("Ja existe um vendedor com esse cpf cadastrado.");
+			// throw new VendedorInvalidoException("Ja existe um vendedor com esse cpf
+			// cadastrado.");
 			return false;
 		}
 
@@ -87,7 +88,9 @@ public class SistemaSorteio {
 	public boolean cadastrarComprador(String cpf, String nome, String telefone) {
 
 		if (buscarCompradorPorCPF(cpf) != null) {
-			throw new CompradorInvalidoException("Ja existe um comprador cadastrado.");
+			System.out.println("Ja existe um comprador cadastrado.");
+			// throw new CompradorInvalidoException("Ja existe um comprador cadastrado.");
+			return false;
 		}
 
 		try {
@@ -100,26 +103,25 @@ public class SistemaSorteio {
 		}
 	}
 
-	public boolean venderBilhete(String codigoSorteio, int numero, String codigoVendedor, String codigoComprador,
+	public boolean venderBilhete(String codigoSorteio, int numero, String cpfVendedor, String cpfComprador,
 			FormaDePagamento formaPagamento) {
 
-		Vendedor vendedor = buscarVendedorPorCPF(codigoVendedor);
-		Comprador comprador = buscarCompradorPorCPF(codigoComprador);
 		Sorteavel item = buscarSorteioPorCodigo(codigoSorteio);
-
-		if (numero <= 0) {
-			throw new BilheteInvalidoException("O numero do bilhete nao pode ser negativo.");
+		if (item == null) {
+			throw new SorteioNaoEncontradoException("Sorteio de codigo " + codigoSorteio + " nao encontrado.");
 		}
+
+		Vendedor vendedor = buscarVendedorPorCPF(cpfVendedor);
+		Comprador comprador = buscarCompradorPorCPF(cpfComprador);
 
 		try {
 			item.venderBilhete(numero, vendedor, comprador, formaPagamento);
-			vendedor.alterarNivelVendedor();
 			return true;
 		} catch (Exception e) {
 			System.out.println("Erro: " + e.getMessage());
 			return false;
-		}
 
+		}
 	}
 
 	public Vendedor buscarVendedorPorCPF(String cpf) {
@@ -265,15 +267,23 @@ public class SistemaSorteio {
 
 		if (sorteio instanceof Rifa) {
 			Rifa rifa = (Rifa) sorteio;
-			if (rifa.prontoParaSorteio()) {
-				return rifa.realizarSorteio();
+			try {
+				if (rifa.prontoParaSorteio()) {
+					return rifa.realizarSorteio();
+				}
+			} catch (Exception e) {
+				System.out.println("Erro: " + e.getMessage());
 			}
 		}
 
 		if (sorteio instanceof PixPremiado) {
 			PixPremiado pix = (PixPremiado) sorteio;
-			if (pix.prontoParaSorteio()) {
-				return pix.realizarSorteio();
+			try {
+				if (pix.prontoParaSorteio()) {
+					return pix.realizarSorteio();
+				}
+			} catch (Exception e) {
+				System.out.println("Erro: " + e.getMessage());
 			}
 		}
 

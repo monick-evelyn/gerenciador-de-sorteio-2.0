@@ -15,6 +15,7 @@ public class Vendedor extends Pessoa {
 	@Override
 	public void registrarHistorico() {
 		quantidadeVendas++;
+	    alterarNivelVendedor();
 	}
 	
 	public boolean alterarNivelVendedor() {
