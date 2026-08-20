@@ -137,7 +137,7 @@ public class ConsoleSorteio {
 		case 21:
 			sortearNumero();
 			break;
-			
+
 		case 22:
 			buscarPessoaPorCPF();
 			break;
@@ -153,17 +153,17 @@ public class ConsoleSorteio {
 
 	private void buscarPessoaPorCPF() {
 		try {
-			String cpf=lerTexto("CPF: ");
+			String cpf = lerTexto("CPF: ");
 			Pessoa pessoa = controlador.buscarPessoaPorCPF(cpf);
-			
-			if(pessoa==null) {
-				throw new PessoaNaoEncontradaException("Nenhuma pessoa encontrada com o CPF("+cpf+").");
+
+			if (pessoa == null) {
+				throw new PessoaNaoEncontradaException("Nenhuma pessoa encontrada com o CPF(" + cpf + ").");
 			}
 			System.out.println(pessoa.toString());
-		}catch(Exception e) {
-			System.out.println("Erro ao buscar pessoa: "+e.getMessage());
+		} catch (Exception e) {
+			System.out.println("Erro ao buscar pessoa: " + e.getMessage());
 		}
-		
+
 	}
 
 	private void sortearNumero() {
@@ -238,7 +238,7 @@ public class ConsoleSorteio {
 			String codigoSorteio = lerTexto("Código sorteio: ");
 			String relatorio = controlador.exibirRelatorioGeralDoSorteio(codigoSorteio);
 			System.out.println(relatorio);
-			
+
 		} catch (SorteioNaoEncontradoException | SorteioInvalidoException e) {
 			System.out.println("Erro :" + e.getMessage());
 
