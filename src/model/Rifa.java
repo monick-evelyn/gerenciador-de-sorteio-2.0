@@ -10,10 +10,9 @@ import exception.LimiteInvalidoException;
 import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
-import model.interfaces.Relatoravel;
 import model.interfaces.Sorteavel;
 
-public class Rifa implements Sorteavel, Relatoravel {
+public class Rifa implements Sorteavel {
 	private String codigo;
 	private String premio;
 	private double valorBilhete;
@@ -218,6 +217,25 @@ public class Rifa implements Sorteavel, Relatoravel {
 		}
 
 		this.meta = novaMeta;
+	}
+
+	public PixPremiado transformarEmPix(int metaBilhetes) {
+		if (sorteado) {
+			throw new SorteioInvalidoException("Nao é possível transformar: a rifa já foi sorteada");
+		}
+		if (metaBilhetes < contarBilhetes()) {
+			throw new LimiteInvalidoException(
+					"A nova meta de bilhetes não pode ser menor que a quantidade de bilhetes já vendida.");
+		}
+		for (Integer numero : bilhetes.keySet()) {
+			if (numero < 1 || numero > metaBilhetes) {
+				throw new LimiteInvalidoException("O bilhete já vendido, fica fora do intervalo da meta");
+			}
+		}
+		PixPremiado pix = new PixPremiado(codigo, premio, valorBilhete, metaBilhetes);
+		pix.getBilhetes().putAll(bilhetes);
+		pix.setArrecadacaoAtual(arrecadacaoAtual);
+		return pix;
 	}
 
 }

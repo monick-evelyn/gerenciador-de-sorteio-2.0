@@ -7,8 +7,7 @@ public class Bilhete {
 	private Vendedor vendedor;
 	private Comprador comprador;
 	private FormaDePagamento formaPagamento;
-	
-	
+
 	public Bilhete(int numero, Vendedor vendedor, Comprador comprador, FormaDePagamento formaPagamento) {
 		this.numero = numero;
 		this.vendedor = vendedor;
@@ -19,7 +18,7 @@ public class Bilhete {
 	public int getNumero() {
 		return numero;
 	}
-	
+
 	public Vendedor getVendedor() {
 		return vendedor;
 	}
@@ -34,11 +33,8 @@ public class Bilhete {
 
 	@Override
 	public String toString() {
-		return "Numero: " + numero + 
-				"\nVendedor: " + vendedor.getCpf() +
-				"\nComprador: " + comprador.getNome() + 
-				"\nForma de pagamento: " + formaPagamento.name();
+		return "Numero: " + numero + "\nVendedor: " + vendedor.getCpf() + "\nComprador: " + comprador.getNome()
+				+ "\nForma de pagamento: " + formaPagamento.name();
 	}
-	
-	
+
 }

@@ -2,7 +2,7 @@ package model;
 
 public class Comprador extends Pessoa {
 	private int quantidadeBilhetesComprados;
-	
+
 	public Comprador(String cpf, String nome, String telefone) {
 		super(cpf, nome, telefone);
 		this.quantidadeBilhetesComprados = 0;
@@ -19,7 +19,6 @@ public class Comprador extends Pessoa {
 
 	@Override
 	public String toString() {
-		return super.toString() + 
-				"\nQuantidade de bilhetes comprados: " + quantidadeBilhetesComprados + "\n";
+		return super.toString() + "\nQuantidade de bilhetes comprados: " + quantidadeBilhetesComprados + "\n";
 	}
 }

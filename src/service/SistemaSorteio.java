@@ -14,12 +14,9 @@ import model.Vendedor;
 import model.enums.FormaDePagamento;
 import model.interfaces.Sorteavel;
 
-import exception.BilheteInvalidoException;
 import exception.BilheteNaoEncontradoException;
 import exception.CompradorNaoEncontradoException;
-import exception.LimiteInvalidoException;
 
-import exception.SorteioInvalidoException;
 import exception.SorteioNaoEncontradoException;
 import exception.VendedorNaoEncontradoException;
 
@@ -172,7 +169,7 @@ public class SistemaSorteio {
 		if (sorteio == null) {
 			return null;
 		}
-		
+
 		try {
 			return sorteio.buscarBilhete(numeroBilhete);
 		} catch (Exception e) {
@@ -219,7 +216,7 @@ public class SistemaSorteio {
 		if (sorteio == null) {
 			return "Nenhum sorteio encontrado.";
 		}
-		
+
 		return sorteio.toString();
 	}
 
@@ -254,7 +251,7 @@ public class SistemaSorteio {
 		if (sorteio == null) {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigoSorteio + " nao encontrado.");
 		}
-		
+
 		try {
 			if (sorteio.prontoParaSorteio()) {
 				return sorteio.realizarSorteio();
@@ -262,7 +259,7 @@ public class SistemaSorteio {
 		} catch (Exception e) {
 			System.out.println("Erro: " + e.getMessage());
 		}
-		
+
 		return "Não foi possível realizar o sorteio";
 	}
 
@@ -290,12 +287,8 @@ public class SistemaSorteio {
 		if (item == null) {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
 		}
-		if (!(item instanceof Rifa)) {
-			throw new BilheteInvalidoException("O sorteio de codigo " + codigo + " nao e uma Rifa.");
-		}
 
-		Rifa rifa = (Rifa) item;
-		rifa.atualizarMetaRifa(novaMeta);
+		item.atualizarMetaRifa(novaMeta);
 		return true;
 	}
 
@@ -305,12 +298,7 @@ public class SistemaSorteio {
 		if (item == null) {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
 		}
-		if (!(item instanceof PixPremiado)) {
-			throw new BilheteInvalidoException("O sorteio de codigo " + codigo + " nao e uma Rifa.");
-		}
-
-		PixPremiado pix = (PixPremiado) item;
-		pix.atualizarMeta(novaMeta);
+		item.atualizarMetaPix(novaMeta);
 		return true;
 	}
 
@@ -328,6 +316,11 @@ public class SistemaSorteio {
 		Vendedor vendedorAux = buscarVendedorPorCPF(cpf);
 		return vendedorAux.alterarNivelVendedor();
 	}
+	
+	public String mostrarNivelDoVendedor(String cpf) {
+		Vendedor vendedorAux = buscarVendedorPorCPF(cpf);
+		return "Nível de vedendedor " + vendedorAux.getNome() + ": " + vendedorAux.getNivel().name();
+	}
 
 	public boolean transformarRifaemPix(String codigo, int metaBilhetes) {
 		Sorteavel item = itens.get(codigo);
@@ -335,28 +328,7 @@ public class SistemaSorteio {
 		if (item == null) {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
 		}
-		if (!(item instanceof Rifa)) {
-			throw new BilheteInvalidoException("O sorteio de codigo " + codigo + " nao e uma Rifa.");
-		}
-		Rifa rifa = (Rifa) item;
-		if (rifa.isSorteado()) {
-			throw new SorteioInvalidoException("Nao e possivel transformar: a rifa ja foi sorteada.");
-		}
-		if (metaBilhetes < rifa.contarBilhetes()) {
-			throw new LimiteInvalidoException(
-					"A nova meta de bilheres nao pode ser menor que a quantidade de bilhetes ja vendida.");
-		}
-
-		for (Integer numero : rifa.getBilhetes().keySet()) {
-			if (numero < 1 || numero > metaBilhetes) {
-				throw new LimiteInvalidoException(
-						"O bilhete " + numero + " ja vendido fica fora do intervalo da nova meta.");
-			}
-		}
-
-		PixPremiado pix = new PixPremiado(rifa.getCodigo(), rifa.getPremio(), rifa.getValorBilhete(), metaBilhetes);
-		pix.getBilhetes().putAll(rifa.getBilhetes());
-		pix.setArrecadacaoAtual(rifa.getArrecadacaoAtual());
+		PixPremiado pix = item.transformarEmPix(metaBilhetes);
 		itens.put(codigo, pix);
 		return true;
 	}
@@ -368,26 +340,15 @@ public class SistemaSorteio {
 			throw new SorteioNaoEncontradoException("Sorteio de codigo: " + codigo + " nao encontrado.");
 		}
 
-		if (item instanceof Rifa) {
-			Rifa rifa = (Rifa) item;
-			return rifa.gerarRelatorio();
-		}
-
-		if (item instanceof PixPremiado) {
-			PixPremiado pix = (PixPremiado) item;
-			return pix.gerarRelatorio();
-		}
-		throw new SorteioInvalidoException("Nao e possivel gerar o relatorio");
+		return item.gerarRelatorio();
 
 	}
 
 	private HashMap<Integer, Bilhete> obterBilhetesDoSorteio(Sorteavel item) {
-		if (item instanceof Rifa) {
-			return ((Rifa) item).getBilhetes();
-		} else if (item instanceof PixPremiado) {
-			return ((PixPremiado) item).getBilhetes();
+		if (item == null) {
+			return null;
 		}
-		return null;
+		return item.getBilhetes();
 	}
 
 	public String gerarRankingVendedores() {

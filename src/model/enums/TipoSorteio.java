@@ -1,6 +1,5 @@
 package model.enums;
 
 public enum TipoSorteio {
-	RIFA,
-	PIXPREMIADO;
+	RIFA, PIXPREMIADO;
 }

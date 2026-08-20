@@ -10,10 +10,9 @@ import exception.LimiteInvalidoException;
 import exception.PessoaNaoEncontradaException;
 import exception.SorteioInvalidoException;
 import model.enums.FormaDePagamento;
-import model.interfaces.Relatoravel;
 import model.interfaces.Sorteavel;
 
-public class PixPremiado implements Sorteavel, Relatoravel {
+public class PixPremiado implements Sorteavel {
 	private String codigo;
 	private String premio;
 	private double valorBilhete;
@@ -21,13 +20,13 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	private double arrecadacaoAtual;
 	private HashMap<Integer, Bilhete> bilhetes;
 	private boolean sorteado;
-	
+
 	public PixPremiado(String codigo, String premio, double valorBilhete, int metaBilhetes) {
 		validarTexto(codigo);
 		validarTexto(premio);
 		validarValorBilhete(valorBilhete);
-	    validarMeta(metaBilhetes);
-	    
+		validarMeta(metaBilhetes);
+
 		this.codigo = codigo;
 		this.premio = premio;
 		this.valorBilhete = valorBilhete;
@@ -36,28 +35,29 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 		this.bilhetes = new HashMap<>();
 		this.sorteado = false;
 	}
-	
+
 	private void validarNumero(int numero) {
-        if (numero < 1 || numero > metaBilhetes) {
-            throw new BilheteInvalidoException("Número " + numero + " não existe no Pix Premaido (1 a " + metaBilhetes + ").");
-        }
-        if (bilhetes.containsKey(numero)) {
-            throw new BilheteInvalidoException("Bilhete " + numero + " já foi vendido.");
-        }
-    }
-	
+		if (numero < 1 || numero > metaBilhetes) {
+			throw new BilheteInvalidoException(
+					"Número " + numero + " não existe no Pix Premaido (1 a " + metaBilhetes + ").");
+		}
+		if (bilhetes.containsKey(numero)) {
+			throw new BilheteInvalidoException("Bilhete " + numero + " já foi vendido.");
+		}
+	}
+
 	private void validarMeta(double meta) {
-	    if (meta <= 0) {
-	        throw new LimiteInvalidoException("A meta deve ser maior que zero.");
-	    }
+		if (meta <= 0) {
+			throw new LimiteInvalidoException("A meta deve ser maior que zero.");
+		}
 	}
 
 	private void validarValorBilhete(double valorBilhete) {
-	    if (valorBilhete <= 0) {
-	        throw new LimiteInvalidoException("Valor do bilhete deve ser maior que zero: " + valorBilhete);
-	    }
+		if (valorBilhete <= 0) {
+			throw new LimiteInvalidoException("Valor do bilhete deve ser maior que zero: " + valorBilhete);
+		}
 	}
-	
+
 	private void validarTexto(String texto) {
 		if (texto.isBlank()) {
 			throw new DadosInvalidosException(texto);
@@ -83,6 +83,7 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	public double getArrecadacaoAtual() {
 		return arrecadacaoAtual;
 	}
+
 	public void setArrecadacaoAtual(double arrecadacaoAtual) {
 		this.arrecadacaoAtual = arrecadacaoAtual;
 	}
@@ -94,24 +95,26 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 	public boolean isSorteado() {
 		return sorteado;
 	}
+
 	public void setSorteado(boolean sorteado) {
 		this.sorteado = sorteado;
 	}
 
 	@Override
 	public String gerarRelatorio() {
-		
-		String relatorio = String.format("\n============================== RELATÓRIO GERAL ==============================" + 
-							"\nPROGRESSO: ==================================================================" + 
-							"\nMeta de arrecadação: R$ %.2f%n" +
-							"\nValor Arrecadado:    R$ %.2f%n" +
-							"\nBilhetes vendidos: " + contarBilhetes() +
-							"\nProgresso: %.1f%%%n"  + 
-							"\nRestante para meta: %.1f%%%n" + 
-							"\n===========================================================================", calcularMetaArrecadacao(), arrecadacaoAtual, calcularProgressoEmPorcentagem(), calcularRestanteEmPorcentagem());
+
+		String relatorio = String.format(
+				"\n============================== RELATÓRIO GERAL =============================="
+						+ "\nPROGRESSO: =================================================================="
+						+ "\nMeta de arrecadação: R$ %.2f%n" + "\nValor Arrecadado:    R$ %.2f%n"
+						+ "\nBilhetes vendidos: " + contarBilhetes() + "\nProgresso: %.1f%%%n"
+						+ "\nRestante para meta: %.1f%%%n"
+						+ "\n===========================================================================",
+				calcularMetaArrecadacao(), arrecadacaoAtual, calcularProgressoEmPorcentagem(),
+				calcularRestanteEmPorcentagem());
 		return relatorio;
 	}
-	
+
 	public double calcularMetaArrecadacao() {
 		return metaBilhetes * valorBilhete;
 	}
@@ -123,33 +126,32 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 
 	@Override
 	public double calcularProgressoEmPorcentagem() {
-		double progressoPorcentagem = (100 * arrecadacaoAtual/calcularMetaArrecadacao());
+		double progressoPorcentagem = (100 * arrecadacaoAtual / calcularMetaArrecadacao());
 		return progressoPorcentagem;
 	}
-
 
 	@Override
 	public boolean venderBilhete(int numero, Vendedor vendedor, Comprador comprador, FormaDePagamento pagamento) {
 		if (sorteado) {
 			throw new SorteioInvalidoException("A rifa já foi sorteada.");
 		}
-		
+
 		if (vendedor == null) {
 			throw new PessoaNaoEncontradaException("Vendedor não encontrado.");
 		}
-		
+
 		if (comprador == null) {
 			throw new PessoaNaoEncontradaException("Comprador não encontrado.");
 		}
-		
+
 		validarNumero(numero);
-		
+
 		Bilhete bilhete = new Bilhete(numero, vendedor, comprador, pagamento);
-        bilhetes.put(numero, bilhete);
-        arrecadacaoAtual += valorBilhete;
-        vendedor.registrarHistorico();
-        comprador.registrarHistorico();
-        return true;
+		bilhetes.put(numero, bilhete);
+		arrecadacaoAtual += valorBilhete;
+		vendedor.registrarHistorico();
+		comprador.registrarHistorico();
+		return true;
 	}
 
 	@Override
@@ -159,7 +161,7 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 		}
 		return false;
 	}
-	
+
 	public int contarBilhetes() {
 		return bilhetes.size();
 	}
@@ -173,7 +175,7 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 		if (!prontoParaSorteio()) {
 			throw new SorteioInvalidoException("Meta ainda não foi alcançada");
 		}
-		
+
 		if (sorteado) {
 			throw new SorteioInvalidoException("A rifa já foi sorteada.");
 		}
@@ -188,26 +190,20 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 		}
 		this.sorteado = true;
 
-		String resultado = 
-				"\n=================================================\n"
+		String resultado = "\n=================================================\n"
 				+ "           NÚMERO SORTEADO COM SUCESSO!           \n"
-				+ "=================================================\n" 
-				+ "Bilhete: " + bilheteGanhador.toString()
+				+ "=================================================\n" + "Bilhete: " + bilheteGanhador.toString()
 				+ "\nCPF do ganhador: " + bilheteGanhador.getComprador().getCpf()
 				+ "\n=================================================\n";
 
 		return resultado;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Código: " + codigo + 
-				"\nPrêmio: " + premio + 
-				"\nValor por bilhete: " + valorBilhete + 
-				"\nMeta: " + metaBilhetes + " bilhetes" +
-				"\nArrecadacao atual: " + arrecadacaoAtual + 
-				"\nQuantidade de bilhetes vendidos: " + contarBilhetes() + 
-				"\nSorteado? " + sorteado;
+		return "Código: " + codigo + "\nPrêmio: " + premio + "\nValor por bilhete: " + valorBilhete + "\nMeta: "
+				+ metaBilhetes + " bilhetes" + "\nArrecadacao atual: " + arrecadacaoAtual
+				+ "\nQuantidade de bilhetes vendidos: " + contarBilhetes() + "\nSorteado? " + sorteado;
 	}
 
 	@Override
@@ -230,11 +226,11 @@ public class PixPremiado implements Sorteavel, Relatoravel {
 		return true;
 	}
 
-	public void atualizarMeta(int novaMeta) {
-		if(novaMeta<=0) {
+	public void atualizarMetaPix(int novaMeta) {
+		if (novaMeta <= 0) {
 			throw new LimiteInvalidoException("Meta deve ser maior que zero.");
 		}
-		this.metaBilhetes=novaMeta;
-		
+		this.metaBilhetes = novaMeta;
+
 	}
 }
