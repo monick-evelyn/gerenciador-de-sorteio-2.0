@@ -99,7 +99,7 @@ public class ConsoleSorteio {
 			break;
 
 		case 12:
-			atualizarNivelDoVendedor();
+			mostrarNivelDoVendedor();
 			break;
 
 		case 13:
@@ -263,19 +263,14 @@ public class ConsoleSorteio {
 		}
 	}
 
-	private void atualizarNivelDoVendedor() {
+	private void mostrarNivelDoVendedor() {
 		try {
 			String cpf = lerTexto("CPF: ");
-			boolean alteracao = controlador.atualizarNivelDoVendedor(cpf);
+			String resultado = controlador.mostrarNivelDoVendedor(cpf);
+			System.out.println(resultado);
 
-			if (alteracao) {
-				Vendedor vendedor = controlador.buscarVendedorPorCPF(cpf);
-				System.out.println("Nível atualizado com sucesso! Novo nível: " + vendedor.getNivel());
-			} else {
-				System.out.println("O vendedor já está no nível correspondente à sua quantidade de vendas.");
-			}
 		} catch (VendedorNaoEncontradoException e) {
-			System.out.println("Erro ao atualizar nível: " + e.getMessage());
+			System.out.println("Erro ao mostrar o nível: " + e.getMessage());
 		}
 
 	}
@@ -535,7 +530,7 @@ public class ConsoleSorteio {
 		System.out.printf("║ %-49s║%n", "9  - Remover venda");
 		System.out.printf("║ %-49s║%n", "10 - Atualizar meta de uma rifa");
 		System.out.printf("║ %-49s║%n", "11 - Atualizar meta de um pix");
-		System.out.printf("║ %-49s║%n", "12 - Atualizar nível do vendedor");
+		System.out.printf("║ %-49s║%n", "12 - Mostrar nível do vendedor");
 		System.out.printf("║ %-49s║%n", "13 - Transformar uma rifa em pix");
 		System.out.printf("║ %-49s║%n", "14 - Listar sorteios cadastrados");
 		System.out.printf("║ %-49s║%n", "15 - Listar relatório geral do sorteio");

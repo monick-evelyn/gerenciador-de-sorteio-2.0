@@ -101,6 +101,10 @@ public class ControladorSorteio {
 	public boolean atualizarNivelDoVendedor(String cpf) {
 		return sistema.atualizarNivelDoVendedor(cpf);
 	}
+	
+	public String mostrarNivelDoVendedor(String cpf) {
+		return sistema.mostrarNivelDoVendedor(cpf);
+	}
 
 	public boolean transformarRifaemPix(String codigo, int metaBilhetes) {
 		return sistema.transformarRifaemPix(codigo, metaBilhetes);

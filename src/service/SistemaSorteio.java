@@ -316,6 +316,11 @@ public class SistemaSorteio {
 		Vendedor vendedorAux = buscarVendedorPorCPF(cpf);
 		return vendedorAux.alterarNivelVendedor();
 	}
+	
+	public String mostrarNivelDoVendedor(String cpf) {
+		Vendedor vendedorAux = buscarVendedorPorCPF(cpf);
+		return "Nível de vedendedor " + vendedorAux.getNome() + ": " + vendedorAux.getNivel().name();
+	}
 
 	public boolean transformarRifaemPix(String codigo, int metaBilhetes) {
 		Sorteavel item = itens.get(codigo);
