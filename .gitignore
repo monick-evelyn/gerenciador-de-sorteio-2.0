@@ -38,6 +38,9 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
+# Arquivos de texto
+.txt
+
 # Gradle (se utilizar)
 .gradle/
 build/
